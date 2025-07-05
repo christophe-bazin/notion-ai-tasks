@@ -200,12 +200,12 @@ The tool uses `notion-tasks.config.json` with these options:
 1. **Read the guidelines**: Always read this file (`AI_GUIDELINES.md`) when working with notion-ai-tasks
 2. **CRITICAL - Get task specs**: Use `npx notion-ai-tasks get <task-id>` to retrieve task specifications (NEVER use WebFetch)
 3. **Verify task access**: If step 2 fails, STOP immediately and inform user
-4. **Analyze the codebase**: Understand what needs to be done by reading the code
-5. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
-6. **Use the right template**: Apply the content structure that matches the task type
-7. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
-8. **Update status and progress**: 
-   - **IMMEDIATELY** update task status to "In Progress" when you start working on it
+4. **MANDATORY - Update status**: IMMEDIATELY after getting task specs, run `npx notion-ai-tasks update <task-id> -s "In Progress"`
+5. **Analyze the codebase**: Understand what needs to be done by reading the code
+6. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
+7. **Use the right template**: Apply the content structure that matches the task type
+8. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
+9. **Update status and progress during development**: 
    - Update individual todos as you complete them using `update-todo`
    - Mark multiple steps as complete using `mark-progress`
    - Update final status to "Done" when task is completed
@@ -221,16 +221,15 @@ npx notion-ai-tasks get 2270fffd93c2816c813cc1d32ad41a73
 # 3. If step 2 fails, STOP and inform user
 # If successful, continue with implementation
 
-# 4. Analyze the codebase to understand what needs to be done
+# 4. MANDATORY - Update task status IMMEDIATELY after getting specs
+npx notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "In Progress"
+
+# 5. Analyze the codebase to understand what needs to be done
 # (use code analysis tools, read files, etc.)
 
-# 5. Create the task using the appropriate template
-npx notion-ai-tasks create "Fix user authentication bug" -t "Bug" -p "High"
+# 6. Continue with implementation work
 
-# 6. Update task status as you progress
-npx notion-ai-tasks update <task-id> -s "In Progress"
-
-# 7. Update individual todos in task content
+# 7. Update individual todos in task content as you complete them
 npx notion-ai-tasks update-todo <task-id> "Identify the root cause" -c true
 
 # 8. Mark progress by completing multiple steps at once
@@ -241,6 +240,9 @@ npx notion-ai-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database
 
 # 10. Auto-update status based on progress
 npx notion-ai-tasks update-status <task-id>
+
+# 11. When task is fully completed, update final status
+npx notion-ai-tasks update <task-id> -s "Done"
 ```
 
 ### Integration with Other Projects
