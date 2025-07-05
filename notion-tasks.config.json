@@ -7,5 +7,5 @@
   "defaultPriority": "Medium",
   "defaultType": "Task",
   "defaultStatus": "Not Started",
-  "_aiInstructions": "AI: This tool is published on npm. Use 'npx notion-ai-tasks' to run commands. Read AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type. CRITICAL: ALWAYS use 'npx notion-ai-tasks get <task-id>' to retrieve task specs, NEVER use WebFetch for Notion URLs. If task specs cannot be retrieved, STOP the process immediately. MANDATORY: IMMEDIATELY after getting task specs, update task status to 'In Progress' with 'npx notion-ai-tasks update <task-id> -s \"In Progress\"'. Update todos as you complete them during development."
+  "_aiInstructions": "🚨 CRITICAL: When executing existing tasks, follow AI_TASK_EXECUTION.md workflow EXACTLY. When creating new tasks, use AI_TASK_CREATION.md. When updating tasks manually, use AI_TASK_UPDATE.md. Do NOT deviate from the specified workflows."
 }
