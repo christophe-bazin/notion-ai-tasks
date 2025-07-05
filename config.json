@@ -1,0 +1,7 @@
+{
+  "priorities": ["Low", "Medium", "High"],
+  "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
+  "defaultPriority": "Medium",
+  "defaultType": "Task",
+  "defaultStatus": "Not Started"
+}
