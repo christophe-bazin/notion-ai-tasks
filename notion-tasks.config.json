@@ -1,11 +1,11 @@
 {
-  "notionToken": "your_notion_integration_token_here",
-  "databaseId": "your_notion_database_id_here",
+  "notionToken": "ntn_L4294808514b5NQYP57eQMK9iWFQV05JnpD7jblZJjncmO",
+  "databaseId": "2270fffd93c280babe59db24024c3899",
   "priorities": ["Low", "Medium", "High"],
   "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
   "statuses": ["Not Started", "In Progress", "Done"],
   "defaultPriority": "Medium",
   "defaultType": "Task",
   "defaultStatus": "Not Started",
-  "_aiInstructions": "AI: This tool is published on npm. Install with 'npm install -g notion-ai-tasks' first. Read AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type."
+  "_aiInstructions": "AI: This tool is published on npm. Use 'npx notion-ai-tasks' to run commands. Read AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type. CRITICAL: Always verify task access with 'npx notion-ai-tasks get <task-id>' before proceeding. If task specs cannot be retrieved, STOP the process immediately."
 }
