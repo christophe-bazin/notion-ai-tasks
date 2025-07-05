@@ -186,6 +186,44 @@ export class NotionTaskManager {
     }
   }
 
+  async getTask(taskId) {
+    try {
+      const response = await this.notion.pages.retrieve({
+        page_id: taskId
+      });
+      const schema = await this.getDatabaseSchema();
+      
+      const taskData = {
+        id: response.id,
+        title: response.properties['Project name']?.title[0]?.plain_text || '',
+        status: response.properties.Status?.status?.name || config.defaultStatus,
+        priority: response.properties.Priority?.select?.name || config.defaultPriority,
+        type: response.properties.Type?.select?.name || config.defaultType,
+        createdTime: response.created_time,
+        lastEditedTime: response.last_edited_time,
+        url: response.url
+      };
+
+      // Add all checkbox properties
+      Object.keys(schema).forEach(propName => {
+        if (schema[propName].type === 'checkbox') {
+          taskData[propName.toLowerCase()] = response.properties[propName]?.checkbox || false;
+        }
+      });
+
+      // Get content blocks
+      const contentResponse = await this.notion.blocks.children.list({
+        block_id: taskId
+      });
+      taskData.content = contentResponse.results;
+
+      return taskData;
+    } catch (error) {
+      console.error('Error getting task:', error);
+      throw error;
+    }
+  }
+
   async getTaskContent(taskId) {
     try {
       const response = await this.notion.blocks.children.list({

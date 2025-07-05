@@ -28,6 +28,67 @@ program
   });
 
 program
+  .command('get <id>')
+  .description('Get task details by ID')
+  .action(async (id) => {
+    try {
+      const task = await taskManager.getTask(id);
+      console.log('\n📄 Task Details:\n');
+      console.log(`Title: ${task.title}`);
+      console.log(`Status: ${task.status} | Priority: ${task.priority} | Type: ${task.type}`);
+      console.log(`ID: ${task.id}`);
+      console.log(`URL: ${task.url}`);
+      console.log(`Created: ${new Date(task.createdTime).toLocaleDateString()}`);
+      console.log(`Last edited: ${new Date(task.lastEditedTime).toLocaleDateString()}`);
+      
+      // Display content blocks
+      if (task.content && task.content.length > 0) {
+        console.log('\n📝 Content:\n');
+        task.content.forEach((block, index) => {
+          switch (block.type) {
+            case 'paragraph':
+              if (block.paragraph.rich_text && block.paragraph.rich_text.length > 0) {
+                console.log(`${block.paragraph.rich_text[0].plain_text}`);
+              }
+              break;
+            case 'heading_1':
+              console.log(`# ${block.heading_1.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'heading_2':
+              console.log(`## ${block.heading_2.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'heading_3':
+              console.log(`### ${block.heading_3.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'bulleted_list_item':
+              console.log(`- ${block.bulleted_list_item.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'numbered_list_item':
+              console.log(`${index + 1}. ${block.numbered_list_item.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'to_do':
+              const checked = block.to_do.checked ? '☑' : '☐';
+              console.log(`${checked} ${block.to_do.rich_text[0]?.plain_text || ''}`);
+              break;
+            case 'code':
+              console.log(`\`\`\`${block.code.language || ''}`);
+              console.log(`${block.code.rich_text[0]?.plain_text || ''}`);
+              console.log('```');
+              break;
+            case 'quote':
+              console.log(`> ${block.quote.rich_text[0]?.plain_text || ''}`);
+              break;
+            default:
+              console.log(`[${block.type}] ${JSON.stringify(block[block.type])}`);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error fetching task:', error.message);
+    }
+  });
+
+program
   .command('create <title>')
   .description('Create a new task')
   .option('-s, --status <status>', 'Task status')
