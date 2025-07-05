@@ -71,6 +71,27 @@ Update a task:
 notion-tasks update <task-id> -s "Done" -p "Low" -t "Bug"
 ```
 
+### Natural Language Commands
+
+You can also use natural language to interact with the tool:
+
+```bash
+# Create tasks
+notion-tasks create "Fix login bug"
+notion-tasks "créer Fix the header layout"
+
+# Update tasks  
+notion-tasks "update abc123 to In Progress"
+notion-tasks "modifier def456 vers Done"
+
+# List tasks
+notion-tasks "list tasks"
+notion-tasks "afficher les tâches"
+
+# Work on tasks (URL processing)
+notion-tasks "work on https://notion.so/task-url"
+```
+
 ### Direct Usage
 
 Run the application:
