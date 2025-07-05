@@ -7,5 +7,5 @@
   "defaultPriority": "Medium",
   "defaultType": "Task",
   "defaultStatus": "Not Started",
-  "_aiInstructions": "AI: Read AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type."
+  "_aiInstructions": "AI: This tool is not published on npm. Install locally with 'npm install -g /home/christophe/Dev/notion-ai-tasks' first. Read AI_GUIDELINES.md at /home/christophe/Dev/notion-ai-tasks/AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type."
 }

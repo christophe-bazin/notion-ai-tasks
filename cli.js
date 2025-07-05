@@ -33,14 +33,23 @@ program
   .option('-s, --status <status>', 'Task status')
   .option('-p, --priority <priority>', 'Task priority')
   .option('-t, --type <type>', 'Task type')
+  .option('-c, --content <content>', 'Task content (markdown format)')
   .action(async (title, options) => {
     try {
-      const task = await taskManager.createTask({
+      const taskData = {
         title,
         status: options.status,
         priority: options.priority,
         type: options.type
-      });
+      };
+
+      // Parse content if provided
+      if (options.content) {
+        const content = parseMarkdownToBlocks(options.content);
+        taskData.content = content;
+      }
+
+      const task = await taskManager.createTask(taskData);
       console.log('✅ Task created:', task.title);
     } catch (error) {
       console.error('❌ Error creating task:', error.message);
@@ -154,6 +163,57 @@ program
       console.error('❌ Error updating todo:', error.message);
     }
   });
+
+// Parse markdown content to Notion blocks
+function parseMarkdownToBlocks(markdown) {
+  const blocks = [];
+  const lines = markdown.split('\n');
+  
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) continue;
+    
+    // Headings
+    if (line.startsWith('## ')) {
+      blocks.push({
+        type: 'heading_2',
+        heading_2: {
+          rich_text: [{ type: 'text', text: { content: line.substring(3) } }]
+        }
+      });
+    }
+    // Todo items
+    else if (line.startsWith('- [ ] ')) {
+      blocks.push({
+        type: 'to_do',
+        to_do: {
+          rich_text: [{ type: 'text', text: { content: line.substring(6) } }],
+          checked: false
+        }
+      });
+    }
+    // Bullet points
+    else if (line.startsWith('- ')) {
+      blocks.push({
+        type: 'bulleted_list_item',
+        bulleted_list_item: {
+          rich_text: [{ type: 'text', text: { content: line.substring(2) } }]
+        }
+      });
+    }
+    // Regular paragraphs
+    else {
+      blocks.push({
+        type: 'paragraph',
+        paragraph: {
+          rich_text: [{ type: 'text', text: { content: line } }]
+        }
+      });
+    }
+  }
+  
+  return blocks;
+}
 
 // Parse natural language commands
 function parseNaturalLanguage(text) {
