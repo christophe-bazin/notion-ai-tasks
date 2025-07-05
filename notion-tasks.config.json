@@ -1,6 +1,6 @@
 {
-  "notionToken": "ntn_L4294808514b5NQYP57eQMK9iWFQV05JnpD7jblZJjncmO",
-  "databaseId": "2270fffd93c280babe59db24024c3899",
+  "notionToken": "your_notion_integration_token_here",
+  "databaseId": "your_notion_database_id_here",
   "priorities": ["Low", "Medium", "High"],
   "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
   "statuses": ["Not Started", "In Progress", "Done"],
