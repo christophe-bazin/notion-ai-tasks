@@ -1,6 +1,6 @@
 {
   "name": "notion-ai-tasks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Notion integration to read and create development project tasks",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,13 @@
   "bin": {
     "notion-tasks": "./cli.js"
   },
-  "keywords": ["notion", "task", "cli", "productivity", "project-management"],
+  "keywords": [
+    "notion",
+    "task",
+    "cli",
+    "productivity",
+    "project-management"
+  ],
   "author": "Christophe",
   "license": "MIT",
   "repository": {
