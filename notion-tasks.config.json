@@ -3,7 +3,9 @@
   "databaseId": "your_notion_database_id_here",
   "priorities": ["Low", "Medium", "High"],
   "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
+  "statuses": ["Not Started", "In Progress", "Done"],
   "defaultPriority": "Medium",
   "defaultType": "Task",
-  "defaultStatus": "Not Started"
+  "defaultStatus": "Not Started",
+  "_aiInstructions": "AI: Read AI_GUIDELINES.md for task structure templates. Adapt content based on task type (Bug/Feature/Documentation/Refactoring). Use appropriate sections and checklists for each type."
 }

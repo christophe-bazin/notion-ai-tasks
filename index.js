@@ -6,6 +6,11 @@ import path from 'path';
 let config;
 try {
   config = JSON.parse(fs.readFileSync('./notion-tasks.config.json', 'utf8'));
+  
+  // Show AI instructions if present
+  if (config._aiInstructions) {
+    console.log('🤖 AI Instructions:', config._aiInstructions);
+  }
 } catch (error) {
   console.error('Error: notion-tasks.config.json not found in current directory');
   console.error('Please create a notion-tasks.config.json file with your Notion credentials');

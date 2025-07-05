@@ -31,6 +31,7 @@ A Node.js application to read and create development project tasks in Notion.
      "databaseId": "your_notion_database_id_here",
      "priorities": ["Low", "Medium", "High"],
      "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
+     "statuses": ["Not Started", "In Progress", "Done"],
      "defaultPriority": "Medium",
      "defaultType": "Task",
      "defaultStatus": "Not Started"
@@ -39,6 +40,14 @@ A Node.js application to read and create development project tasks in Notion.
 
 5. Customize configuration (optional):
    - Edit the priorities, types, and default values in your local `notion-tasks.config.json`
+
+## For AI Assistants
+
+When working with this tool, AI assistants should:
+1. Read the `AI_GUIDELINES.md` file to understand task structure templates
+2. Analyze the codebase to determine the appropriate task type
+3. Use the type-specific content templates when creating tasks
+4. Follow the structured approach for consistent task creation
 
 ## Usage
 
