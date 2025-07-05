@@ -2,6 +2,24 @@
 
 This document provides guidelines for AI assistants to create well-structured development tasks in Notion using the notion-ai-tasks tool.
 
+## 🚨 CRITICAL: Task Retrieval Method
+
+**ALWAYS use `notion-ai-tasks get` instead of WebFetch for Notion URLs:**
+
+❌ **WRONG - Do NOT use WebFetch:**
+```
+Fetch(https://www.notion.so/task-url)
+```
+
+✅ **CORRECT - Use notion-ai-tasks:**
+```bash
+npx notion-ai-tasks get <task-id>
+```
+
+**Why?** WebFetch retrieves raw HTML, but `notion-ai-tasks get` retrieves structured task content with todos, requirements, and specifications.
+
+**Task ID extraction:** From URL `https://www.notion.so/task-name-2270fffd93c2816c813cc1d32ad41a73`, use ID `2270fffd93c2816c813cc1d32ad41a73`
+
 ## 📝 Task Structure in Notion
 
 Each task should follow this structure:
@@ -180,11 +198,13 @@ The tool uses `notion-tasks.config.json` with these options:
 
 ### For AI Assistants
 1. **Read the guidelines**: Always read this file (`AI_GUIDELINES.md`) when working with notion-ai-tasks
-2. **Analyze the codebase**: Understand what needs to be done by reading the code
-3. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
-4. **Use the right template**: Apply the content structure that matches the task type
-5. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
-6. **Update status and progress**: 
+2. **CRITICAL - Get task specs**: Use `npx notion-ai-tasks get <task-id>` to retrieve task specifications (NEVER use WebFetch)
+3. **Verify task access**: If step 2 fails, STOP immediately and inform user
+4. **Analyze the codebase**: Understand what needs to be done by reading the code
+5. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
+6. **Use the right template**: Apply the content structure that matches the task type
+7. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
+8. **Update status and progress**: 
    - **IMMEDIATELY** update task status to "In Progress" when you start working on it
    - Update individual todos as you complete them using `update-todo`
    - Mark multiple steps as complete using `mark-progress`
@@ -195,26 +215,32 @@ The tool uses `notion-tasks.config.json` with these options:
 # 1. Read the guidelines
 cat AI_GUIDELINES.md
 
-# 2. Analyze the codebase to understand what needs to be done
+# 2. CRITICAL - Get task specifications (extract task-id from URL)
+npx notion-ai-tasks get 2270fffd93c2816c813cc1d32ad41a73
+
+# 3. If step 2 fails, STOP and inform user
+# If successful, continue with implementation
+
+# 4. Analyze the codebase to understand what needs to be done
 # (use code analysis tools, read files, etc.)
 
-# 3. Create the task using the appropriate template
-notion-tasks create "Fix user authentication bug" -t "Bug" -p "High"
+# 5. Create the task using the appropriate template
+npx notion-ai-tasks create "Fix user authentication bug" -t "Bug" -p "High"
 
-# 4. Update task status as you progress
-notion-tasks update <task-id> -s "In Progress"
+# 6. Update task status as you progress
+npx notion-ai-tasks update <task-id> -s "In Progress"
 
-# 5. Update individual todos in task content
-notion-tasks update-todo <task-id> "Identify the root cause" -c true
+# 7. Update individual todos in task content
+npx notion-ai-tasks update-todo <task-id> "Identify the root cause" -c true
 
-# 6. Mark progress by completing multiple steps at once
-notion-tasks mark-progress <task-id> 3
+# 8. Mark progress by completing multiple steps at once
+npx notion-ai-tasks mark-progress <task-id> 3
 
-# 7. Update multiple todos at once
-notion-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
+# 9. Update multiple todos at once
+npx notion-ai-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
 
-# 8. Auto-update status based on progress
-notion-tasks update-status <task-id>
+# 10. Auto-update status based on progress
+npx notion-ai-tasks update-status <task-id>
 ```
 
 ### Integration with Other Projects
