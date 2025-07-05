@@ -265,6 +265,137 @@ export class NotionTaskManager {
       throw error;
     }
   }
+
+  async updateMultipleTodosInContent(taskId, todoUpdates) {
+    try {
+      const blocks = await this.getTaskContent(taskId);
+      const todoBlocks = blocks.filter(block => block.type === 'to_do');
+      
+      const updates = [];
+      
+      for (const update of todoUpdates) {
+        const todoBlock = todoBlocks.find(block => 
+          block.to_do.rich_text[0]?.plain_text.includes(update.text)
+        );
+        
+        if (todoBlock) {
+          updates.push({
+            blockId: todoBlock.id,
+            checked: update.checked,
+            richText: todoBlock.to_do.rich_text
+          });
+        }
+      }
+      
+      // Execute all updates in parallel
+      await Promise.all(updates.map(update => 
+        this.notion.blocks.update({
+          block_id: update.blockId,
+          to_do: {
+            rich_text: update.richText,
+            checked: update.checked
+          }
+        })
+      ));
+
+      return { success: true, updated: updates.length };
+    } catch (error) {
+      console.error('Error updating multiple todos in content:', error);
+      throw error;
+    }
+  }
+
+  async markTaskProgress(taskId, completedSteps) {
+    try {
+      const blocks = await this.getTaskContent(taskId);
+      const todoBlocks = blocks.filter(block => block.type === 'to_do');
+      
+      if (todoBlocks.length === 0) {
+        return { success: false, message: 'No todo items found in task' };
+      }
+
+      // Mark specified number of steps as completed
+      const updates = [];
+      for (let i = 0; i < Math.min(completedSteps, todoBlocks.length); i++) {
+        const todoBlock = todoBlocks[i];
+        if (!todoBlock.to_do.checked) {
+          updates.push({
+            blockId: todoBlock.id,
+            richText: todoBlock.to_do.rich_text
+          });
+        }
+      }
+
+      // Execute updates
+      await Promise.all(updates.map(update => 
+        this.notion.blocks.update({
+          block_id: update.blockId,
+          to_do: {
+            rich_text: update.richText,
+            checked: true
+          }
+        })
+      ));
+
+      // Update task status based on progress
+      const statusUpdate = await this.updateTaskStatusBasedOnProgress(taskId);
+
+      return { 
+        success: true, 
+        updated: updates.length,
+        statusUpdate: statusUpdate.success ? statusUpdate.newStatus : null,
+        progress: statusUpdate.progress
+      };
+    } catch (error) {
+      console.error('Error marking task progress:', error);
+      throw error;
+    }
+  }
+
+  async getTaskProgress(taskId) {
+    try {
+      const blocks = await this.getTaskContent(taskId);
+      const todoBlocks = blocks.filter(block => block.type === 'to_do');
+      
+      if (todoBlocks.length === 0) {
+        return { total: 0, completed: 0, percentage: 0 };
+      }
+
+      const completed = todoBlocks.filter(block => block.to_do.checked).length;
+      const total = todoBlocks.length;
+      const percentage = Math.round((completed / total) * 100);
+
+      return { total, completed, percentage };
+    } catch (error) {
+      console.error('Error getting task progress:', error);
+      throw error;
+    }
+  }
+
+  async updateTaskStatusBasedOnProgress(taskId) {
+    try {
+      const progress = await this.getTaskProgress(taskId);
+      let newStatus = null;
+
+      if (progress.percentage === 0) {
+        newStatus = config.statuses.find(s => s.includes('Not Started') || s.includes('To Do')) || config.statuses[0];
+      } else if (progress.percentage === 100) {
+        newStatus = config.statuses.find(s => s.includes('Done') || s.includes('Completed')) || config.statuses[config.statuses.length - 1];
+      } else if (progress.percentage > 0) {
+        newStatus = config.statuses.find(s => s.includes('In Progress') || s.includes('Working')) || config.statuses[1];
+      }
+
+      if (newStatus) {
+        await this.updateTask(taskId, { status: newStatus });
+        return { success: true, newStatus, progress };
+      }
+
+      return { success: false, message: 'No appropriate status found' };
+    } catch (error) {
+      console.error('Error updating task status based on progress:', error);
+      throw error;
+    }
+  }
 }
 
 async function main() {

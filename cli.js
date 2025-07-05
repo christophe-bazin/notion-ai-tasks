@@ -225,6 +225,85 @@ program
     }
   });
 
+program
+  .command('progress <id>')
+  .description('Show task progress')
+  .action(async (id) => {
+    try {
+      const progress = await taskManager.getTaskProgress(id);
+      console.log(`📊 Task Progress: ${progress.completed}/${progress.total} (${progress.percentage}%)`);
+    } catch (error) {
+      console.error('❌ Error getting task progress:', error.message);
+    }
+  });
+
+program
+  .command('mark-progress <id> <steps>')
+  .description('Mark progress by completing specified number of steps')
+  .action(async (id, steps) => {
+    try {
+      const result = await taskManager.markTaskProgress(id, parseInt(steps));
+      if (result.success) {
+        console.log(`✅ Marked ${result.updated} steps as completed`);
+        
+        if (result.statusUpdate) {
+          console.log(`📝 Status automatically updated to: ${result.statusUpdate}`);
+        }
+        
+        // Show updated progress
+        console.log(`📊 New Progress: ${result.progress.completed}/${result.progress.total} (${result.progress.percentage}%)`);
+      } else {
+        console.log(`⚠️  ${result.message}`);
+      }
+    } catch (error) {
+      console.error('❌ Error marking progress:', error.message);
+    }
+  });
+
+program
+  .command('update-multiple-todos <id>')
+  .description('Update multiple todos in task content')
+  .option('-u, --updates <updates>', 'JSON array of updates (e.g., [{"text":"task1","checked":true}])')
+  .action(async (id, options) => {
+    try {
+      if (!options.updates) {
+        console.log('❌ Please provide updates using -u option');
+        console.log('Example: -u \'[{"text":"Setup database","checked":true},{"text":"Create API","checked":false}]\'');
+        return;
+      }
+      
+      const updates = JSON.parse(options.updates);
+      const result = await taskManager.updateMultipleTodosInContent(id, updates);
+      console.log(`✅ Updated ${result.updated} todos successfully`);
+      
+      // Update status based on progress
+      const statusUpdate = await taskManager.updateTaskStatusBasedOnProgress(id);
+      if (statusUpdate.success) {
+        console.log(`📝 Status automatically updated to: ${statusUpdate.newStatus}`);
+        console.log(`📊 Progress: ${statusUpdate.progress.completed}/${statusUpdate.progress.total} (${statusUpdate.progress.percentage}%)`);
+      }
+    } catch (error) {
+      console.error('❌ Error updating multiple todos:', error.message);
+    }
+  });
+
+program
+  .command('update-status <id>')
+  .description('Update task status based on current progress')
+  .action(async (id) => {
+    try {
+      const result = await taskManager.updateTaskStatusBasedOnProgress(id);
+      if (result.success) {
+        console.log(`✅ Status updated to: ${result.newStatus}`);
+        console.log(`📊 Progress: ${result.progress.completed}/${result.progress.total} (${result.progress.percentage}%)`);
+      } else {
+        console.log(`⚠️  ${result.message}`);
+      }
+    } catch (error) {
+      console.error('❌ Error updating status:', error.message);
+    }
+  });
+
 // Parse markdown content to Notion blocks
 function parseMarkdownToBlocks(markdown) {
   const blocks = [];
