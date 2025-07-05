@@ -4,30 +4,41 @@ A Node.js application to read and create development project tasks in Notion.
 
 ## Setup
 
-1. Clone this repository
-2. Install dependencies:
+1. Install the package globally:
    ```bash
-   npm install
+   npm install -g notion-ai-tasks
    ```
 
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Configure your Notion integration:
+2. Configure your Notion integration:
    - Create a new integration at https://www.notion.so/my-integrations
-   - Copy the integration token to `NOTION_TOKEN` in your `.env` file
    - Create a database in Notion with the following properties:
-     - **Name** (Title) - Required
-     - **Status** (Select) - Required with options: Not Started, In Progress, Done
-     - **Priority** (Select) - Required with options: Low, Medium, High, Urgent
-     - **Type** (Select) - Required with options: Bug, Feature, Task, Documentation, Refactoring
+     - **Project name** (Title) - Required
+     - **Status** (Select) - Required with status options (ex: Not Started, In Progress, Done)
+     - **Priority** (Select) - Required with priority options (ex: Low, Medium, High)
+     - **Type** (Select) - Required with type options (ex: Bug, Feature, Task, Documentation, Refactoring)
    - Share the database with your integration
-   - Copy the database ID to `NOTION_DATABASE_ID` in your `.env` file
+
+3. Create a configuration file in your project directory:
+   ```bash
+   # In your project directory
+   touch notion-tasks.config.json
+   ```
+
+4. Configure the config file with your Notion credentials:
+   ```json
+   {
+     "notionToken": "your_notion_integration_token_here",
+     "databaseId": "your_notion_database_id_here",
+     "priorities": ["Low", "Medium", "High"],
+     "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
+     "defaultPriority": "Medium",
+     "defaultType": "Task",
+     "defaultStatus": "Not Started"
+   }
+   ```
 
 5. Customize configuration (optional):
-   - Edit `config.json` to modify available priorities, types, and default values
+   - Edit the priorities, types, and default values in your local `notion-tasks.config.json`
 
 ## Usage
 

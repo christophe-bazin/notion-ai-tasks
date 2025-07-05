@@ -1,34 +1,22 @@
 import { Client } from '@notionhq/client';
-import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
 
-dotenv.config();
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
-const databaseId = process.env.NOTION_DATABASE_ID;
-
-// Try to load config from current directory, fallback to package directory
+// Load config from local project directory
 let config;
 try {
-  config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+  config = JSON.parse(fs.readFileSync('./notion-tasks.config.json', 'utf8'));
 } catch (error) {
-  try {
-    const packageDir = new URL('../', import.meta.url).pathname;
-    config = JSON.parse(fs.readFileSync(packageDir + 'config.json', 'utf8'));
-  } catch (fallbackError) {
-    // Default config if no file found
-    config = {
-      priorities: ["Low", "Medium", "High"],
-      types: ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
-      defaultPriority: "Medium",
-      defaultType: "Task",
-      defaultStatus: "Not Started"
-    };
-  }
+  console.error('Error: notion-tasks.config.json not found in current directory');
+  console.error('Please create a notion-tasks.config.json file with your Notion credentials');
+  process.exit(1);
 }
+
+const notion = new Client({
+  auth: config.notionToken,
+});
+
+const databaseId = config.databaseId;
 
 export class NotionTaskManager {
   constructor() {
