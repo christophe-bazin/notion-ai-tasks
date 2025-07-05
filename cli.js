@@ -53,6 +53,7 @@ program
   .option('-s, --status <status>', 'New status')
   .option('-p, --priority <priority>', 'New priority')
   .option('-t, --type <type>', 'New type')
+  .option('-c, --checkbox <name=value>', 'Update checkbox (format: name=true/false)', collect, [])
   .action(async (id, options) => {
     try {
       const updates = {};
@@ -60,11 +61,102 @@ program
       if (options.priority) updates.priority = options.priority;
       if (options.type) updates.type = options.type;
       
+      // Handle checkbox updates
+      if (options.checkbox) {
+        options.checkbox.forEach(checkbox => {
+          const [name, value] = checkbox.split('=');
+          if (name && value !== undefined) {
+            updates[name] = value === 'true';
+          }
+        });
+      }
+      
       await taskManager.updateTask(id, updates);
       console.log('✅ Task updated successfully');
     } catch (error) {
       console.error('❌ Error updating task:', error.message);
     }
   });
+
+program
+  .command('add-content <id>')
+  .description('Add content blocks to a task')
+  .option('-t, --text <text>', 'Add paragraph text')
+  .option('-h, --heading <heading>', 'Add heading')
+  .option('-c, --todo <todo>', 'Add todo item', collect, [])
+  .option('-b, --bullet <bullet>', 'Add bullet point', collect, [])
+  .action(async (id, options) => {
+    try {
+      const content = [];
+      
+      if (options.heading) {
+        content.push({
+          type: 'heading_2',
+          heading_2: {
+            rich_text: [{ type: 'text', text: { content: options.heading } }]
+          }
+        });
+      }
+      
+      if (options.text) {
+        content.push({
+          type: 'paragraph',
+          paragraph: {
+            rich_text: [{ type: 'text', text: { content: options.text } }]
+          }
+        });
+      }
+      
+      if (options.todo) {
+        options.todo.forEach(todo => {
+          content.push({
+            type: 'to_do',
+            to_do: {
+              rich_text: [{ type: 'text', text: { content: todo } }],
+              checked: false
+            }
+          });
+        });
+      }
+      
+      if (options.bullet) {
+        options.bullet.forEach(bullet => {
+          content.push({
+            type: 'bulleted_list_item',
+            bulleted_list_item: {
+              rich_text: [{ type: 'text', text: { content: bullet } }]
+            }
+          });
+        });
+      }
+      
+      if (content.length > 0) {
+        await taskManager.addContentToTask(id, content);
+        console.log('✅ Content added successfully');
+      } else {
+        console.log('⚠️  No content specified. Use -t, -h, -c, or -b options.');
+      }
+    } catch (error) {
+      console.error('❌ Error adding content:', error.message);
+    }
+  });
+
+program
+  .command('update-todo <id> <todoText>')
+  .description('Update a todo item in task content')
+  .option('-c, --checked <checked>', 'Set todo as checked (true/false)', 'true')
+  .action(async (id, todoText, options) => {
+    try {
+      const checked = options.checked === 'true';
+      await taskManager.updateTodoInContent(id, todoText, checked);
+      console.log(`✅ Todo "${todoText}" updated successfully`);
+    } catch (error) {
+      console.error('❌ Error updating todo:', error.message);
+    }
+  });
+
+function collect(value, previous) {
+  return previous.concat([value]);
+}
 
 program.parse();

@@ -15,6 +15,17 @@ export class NotionTaskManager {
   constructor() {
     this.notion = notion;
     this.databaseId = databaseId;
+    this.databaseSchema = null;
+  }
+
+  async getDatabaseSchema() {
+    if (!this.databaseSchema) {
+      const database = await this.notion.databases.retrieve({
+        database_id: this.databaseId,
+      });
+      this.databaseSchema = database.properties;
+    }
+    return this.databaseSchema;
   }
 
   async getTasks() {
@@ -22,16 +33,28 @@ export class NotionTaskManager {
       const response = await this.notion.databases.query({
         database_id: this.databaseId,
       });
+      const schema = await this.getDatabaseSchema();
       
-      return response.results.map(task => ({
-        id: task.id,
-        title: task.properties.Name?.title[0]?.plain_text || '',
-        status: task.properties.Status?.select?.name || config.defaultStatus,
-        priority: task.properties.Priority?.select?.name || config.defaultPriority,
-        type: task.properties.Type?.select?.name || config.defaultType,
-        createdTime: task.created_time,
-        lastEditedTime: task.last_edited_time,
-      }));
+      return response.results.map(task => {
+        const taskData = {
+          id: task.id,
+          title: task.properties['Project name']?.title[0]?.plain_text || '',
+          status: task.properties.Status?.status?.name || config.defaultStatus,
+          priority: task.properties.Priority?.select?.name || config.defaultPriority,
+          type: task.properties.Type?.select?.name || config.defaultType,
+          createdTime: task.created_time,
+          lastEditedTime: task.last_edited_time,
+        };
+
+        // Add all checkbox properties
+        Object.keys(schema).forEach(propName => {
+          if (schema[propName].type === 'checkbox') {
+            taskData[propName.toLowerCase()] = task.properties[propName]?.checkbox || false;
+          }
+        });
+
+        return taskData;
+      });
     } catch (error) {
       console.error('Error fetching tasks:', error);
       throw error;
@@ -40,10 +63,10 @@ export class NotionTaskManager {
 
   async createTask(taskData) {
     try {
-      const response = await this.notion.pages.create({
+      const pageData = {
         parent: { database_id: this.databaseId },
         properties: {
-          Name: {
+          'Project name': {
             title: [
               {
                 text: {
@@ -53,7 +76,7 @@ export class NotionTaskManager {
             ],
           },
           Status: {
-            select: {
+            status: {
               name: taskData.status || config.defaultStatus,
             },
           },
@@ -68,7 +91,14 @@ export class NotionTaskManager {
             },
           },
         },
-      });
+      };
+
+      // Add content if provided
+      if (taskData.content) {
+        pageData.children = taskData.content;
+      }
+
+      const response = await this.notion.pages.create(pageData);
       
       return {
         id: response.id,
@@ -79,6 +109,109 @@ export class NotionTaskManager {
       };
     } catch (error) {
       console.error('Error creating task:', error);
+      throw error;
+    }
+  }
+
+  async updateTask(taskId, updates) {
+    try {
+      const schema = await this.getDatabaseSchema();
+      const properties = {};
+
+      // Handle standard properties
+      if (updates.status) {
+        properties.Status = {
+          status: { name: updates.status }
+        };
+      }
+      if (updates.priority) {
+        properties.Priority = {
+          select: { name: updates.priority }
+        };
+      }
+      if (updates.type) {
+        properties.Type = {
+          select: { name: updates.type }
+        };
+      }
+
+      // Handle checkbox properties
+      Object.keys(updates).forEach(key => {
+        // Find the actual property name in schema (case insensitive)
+        const actualPropName = Object.keys(schema).find(prop => 
+          prop.toLowerCase() === key.toLowerCase() && schema[prop].type === 'checkbox'
+        );
+        
+        if (actualPropName) {
+          properties[actualPropName] = {
+            checkbox: updates[key] === true || updates[key] === 'true'
+          };
+        }
+      });
+
+      await this.notion.pages.update({
+        page_id: taskId,
+        properties: properties
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating task:', error);
+      throw error;
+    }
+  }
+
+  async addContentToTask(taskId, content) {
+    try {
+      await this.notion.blocks.children.append({
+        block_id: taskId,
+        children: content
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error adding content to task:', error);
+      throw error;
+    }
+  }
+
+  async getTaskContent(taskId) {
+    try {
+      const response = await this.notion.blocks.children.list({
+        block_id: taskId
+      });
+      return response.results;
+    } catch (error) {
+      console.error('Error getting task content:', error);
+      throw error;
+    }
+  }
+
+  async updateTodoInContent(taskId, todoText, checked) {
+    try {
+      const blocks = await this.getTaskContent(taskId);
+      
+      // Find the todo block by text content
+      const todoBlock = blocks.find(block => 
+        block.type === 'to_do' && 
+        block.to_do.rich_text[0]?.plain_text.includes(todoText)
+      );
+
+      if (!todoBlock) {
+        throw new Error(`Todo containing "${todoText}" not found`);
+      }
+
+      // Update the todo block
+      await this.notion.blocks.update({
+        block_id: todoBlock.id,
+        to_do: {
+          rich_text: todoBlock.to_do.rich_text,
+          checked: checked
+        }
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating todo in content:', error);
       throw error;
     }
   }

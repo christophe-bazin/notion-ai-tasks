@@ -74,3 +74,61 @@ npm run dev
 - CLI interface for easy task management
 - Configurable priorities and types via `config.json`
 - Export `NotionTaskManager` class for integration with other projects
+- Add content blocks (headings, paragraphs, todos, bullets) to tasks
+- Update todos within task content
+
+## API Usage
+
+### Basic Usage
+
+```javascript
+import { NotionTaskManager } from 'notion-ai-tasks';
+
+const taskManager = new NotionTaskManager();
+
+// Get all tasks
+const tasks = await taskManager.getTasks();
+
+// Create a new task
+const newTask = await taskManager.createTask({
+  title: 'My new task',
+  status: 'In Progress',
+  priority: 'High',
+  type: 'Feature'
+});
+
+// Update a task
+await taskManager.updateTask(taskId, {
+  status: 'Done',
+  priority: 'Medium'
+});
+
+// Add content to a task
+await taskManager.addContentToTask(taskId, [
+  {
+    type: 'heading_2',
+    heading_2: {
+      rich_text: [{ type: 'text', text: { content: 'Description' } }]
+    }
+  },
+  {
+    type: 'to_do',
+    to_do: {
+      rich_text: [{ type: 'text', text: { content: 'Complete this task' } }],
+      checked: false
+    }
+  }
+]);
+
+// Update a todo in task content
+await taskManager.updateTodoInContent(taskId, 'Complete this task', true);
+```
+
+### Available Methods
+
+- `getTasks()` - Returns array of all tasks
+- `createTask(taskData)` - Creates new task
+- `updateTask(taskId, updates)` - Updates task properties
+- `addContentToTask(taskId, content)` - Adds content blocks to task
+- `updateTodoInContent(taskId, todoText, checked)` - Updates specific todo
+- `getTaskContent(taskId)` - Gets all content blocks from task
