@@ -155,6 +155,101 @@ program
     }
   });
 
+// Parse natural language commands
+function parseNaturalLanguage(text) {
+  const lower = text.toLowerCase();
+  
+  // Create task patterns
+  if (lower.includes('create') || lower.includes('créer')) {
+    const match = text.match(/(?:create|créer)(?:\s+(?:task|tâche|une tâche))?\s+(.+)/i);
+    if (match) {
+      return { action: 'create', title: match[1].trim() };
+    }
+  }
+  
+  // Update task patterns
+  if (lower.includes('update') || lower.includes('modifier')) {
+    const match = text.match(/(?:update|modifier)(?:\s+(?:task|tâche))?\s+(\S+)(?:\s+(?:to|à|vers))?\s+(.+)/i);
+    if (match) {
+      return { action: 'update', id: match[1], status: match[2].trim() };
+    }
+  }
+  
+  // List tasks patterns
+  if (lower.includes('list') || lower.includes('lister') || lower.includes('afficher')) {
+    return { action: 'list' };
+  }
+  
+  // Work on URL patterns
+  if (lower.includes('work on') || lower.includes('travailler sur') || text.includes('http')) {
+    const urlMatch = text.match(/https?:\/\/[^\s]+/);
+    if (urlMatch) {
+      return { action: 'work', url: urlMatch[0] };
+    }
+  }
+  
+  return null;
+}
+
+// Handle natural language as default command
+program
+  .argument('[instruction...]', 'Natural language instruction')
+  .action(async (instruction) => {
+    if (!instruction || instruction.length === 0) {
+      program.help();
+      return;
+    }
+    
+    const text = instruction.join(' ');
+    
+    try {
+      console.log('🤖 Processing:', text);
+      
+      const parsed = parseNaturalLanguage(text);
+      
+      if (!parsed) {
+        console.log('❌ Could not understand instruction. Examples:');
+        console.log('  - "create Fix login bug"');
+        console.log('  - "update abc123 to In Progress"');
+        console.log('  - "list tasks"');
+        console.log('  - "work on https://notion.so/task-url"');
+        return;
+      }
+      
+      switch (parsed.action) {
+        case 'create':
+          const task = await taskManager.createTask({ title: parsed.title });
+          console.log('✅ Task created:', task.title);
+          break;
+          
+        case 'update':
+          await taskManager.updateTask(parsed.id, { status: parsed.status });
+          console.log('✅ Task updated successfully');
+          break;
+          
+        case 'list':
+          const tasks = await taskManager.getTasks();
+          console.log('\n📋 Your Notion Tasks:\n');
+          tasks.forEach((task, index) => {
+            console.log(`${index + 1}. ${task.title}`);
+            console.log(`   Status: ${task.status} | Priority: ${task.priority} | Type: ${task.type}`);
+            console.log(`   ID: ${task.id}\n`);
+          });
+          break;
+          
+        case 'work':
+          console.log('🔗 Processing task from URL:', parsed.url);
+          console.log('💡 URL processing not implemented yet');
+          break;
+          
+        default:
+          console.log('❌ Unknown action');
+      }
+    } catch (error) {
+      console.error('❌ Error:', error.message);
+    }
+  });
+
 function collect(value, previous) {
   return previous.concat([value]);
 }
