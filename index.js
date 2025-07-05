@@ -9,7 +9,26 @@ const notion = new Client({
 });
 
 const databaseId = process.env.NOTION_DATABASE_ID;
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
+// Try to load config from current directory, fallback to package directory
+let config;
+try {
+  config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+} catch (error) {
+  try {
+    const packageDir = new URL('../', import.meta.url).pathname;
+    config = JSON.parse(fs.readFileSync(packageDir + 'config.json', 'utf8'));
+  } catch (fallbackError) {
+    // Default config if no file found
+    config = {
+      priorities: ["Low", "Medium", "High"],
+      types: ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
+      defaultPriority: "Medium",
+      defaultType: "Task",
+      defaultStatus: "Not Started"
+    };
+  }
+}
 
 export class NotionTaskManager {
   constructor() {
