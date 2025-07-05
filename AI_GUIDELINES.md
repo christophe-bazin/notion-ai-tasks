@@ -113,6 +113,61 @@ Problems with the current implementation.
 - [ ] No regression in functionality
 ```
 
+## Update Commands Reference
+
+The tool provides several commands to update tasks and their progress:
+
+### Basic Task Updates
+```bash
+# Update task properties (status, priority, type)
+notion-tasks update <task-id> -s "In Progress" -p "High" -t "Bug"
+
+# Update checkbox properties
+notion-tasks update <task-id> -c "completed=true" -c "tested=false"
+```
+
+### Todo Management
+```bash
+# Update a single todo item in task content
+notion-tasks update-todo <task-id> "Setup database" -c true
+
+# Update multiple todos at once
+notion-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
+
+# Mark progress by completing X number of steps
+notion-tasks mark-progress <task-id> 3
+```
+
+### Status Management
+```bash
+# Auto-update task status based on todo completion progress
+notion-tasks update-status <task-id>
+
+# Check current progress
+notion-tasks progress <task-id>
+```
+
+## ⚠️ Important: When to Update Tasks
+
+**CRITICAL**: Always update task status when working on it:
+
+1. **Before starting work**: Update status to "In Progress"
+   ```bash
+   notion-tasks update <task-id> -s "In Progress"
+   ```
+
+2. **During work**: Update todos as you complete them
+   ```bash
+   notion-tasks update-todo <task-id> "Setup database" -c true
+   ```
+
+3. **After completing work**: Update status to "Done"
+   ```bash
+   notion-tasks update <task-id> -s "Done"
+   ```
+
+**AI Assistants**: You MUST update the task status immediately when you start working on a task, not just when you finish it.
+
 ## Configuration Reference
 
 The tool uses `notion-tasks.config.json` with these options:
@@ -129,7 +184,11 @@ The tool uses `notion-tasks.config.json` with these options:
 3. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
 4. **Use the right template**: Apply the content structure that matches the task type
 5. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
-6. **Update status**: Update task status according to progress (Not Started → In Progress → Done)
+6. **Update status and progress**: 
+   - **IMMEDIATELY** update task status to "In Progress" when you start working on it
+   - Update individual todos as you complete them using `update-todo`
+   - Mark multiple steps as complete using `mark-progress`
+   - Update final status to "Done" when task is completed
 
 ### Example Workflow
 ```bash
@@ -141,6 +200,21 @@ cat AI_GUIDELINES.md
 
 # 3. Create the task using the appropriate template
 notion-tasks create "Fix user authentication bug" -t "Bug" -p "High"
+
+# 4. Update task status as you progress
+notion-tasks update <task-id> -s "In Progress"
+
+# 5. Update individual todos in task content
+notion-tasks update-todo <task-id> "Identify the root cause" -c true
+
+# 6. Mark progress by completing multiple steps at once
+notion-tasks mark-progress <task-id> 3
+
+# 7. Update multiple todos at once
+notion-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
+
+# 8. Auto-update status based on progress
+notion-tasks update-status <task-id>
 ```
 
 ### Integration with Other Projects
