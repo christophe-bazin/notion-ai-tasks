@@ -53,10 +53,7 @@ When working with this tool, AI assistants should:
 
 ### CLI Commands
 
-Install globally:
-```bash
-npm install -g .
-```
+The tool is now installed globally via npm.
 
 List all tasks:
 ```bash

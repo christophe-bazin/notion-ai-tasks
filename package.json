@@ -10,6 +10,13 @@
   "bin": {
     "notion-tasks": "./cli.js"
   },
+  "keywords": ["notion", "task", "cli", "productivity", "project-management"],
+  "author": "Christophe",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christophe/notion-ai-tasks.git"
+  },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "dotenv": "^16.3.1",
@@ -18,5 +25,8 @@
   "devDependencies": {
     "nodemon": "^3.0.2"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
