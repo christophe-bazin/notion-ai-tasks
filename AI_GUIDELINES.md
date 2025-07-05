@@ -129,6 +129,7 @@ The tool uses `notion-tasks.config.json` with these options:
 3. **Determine task type**: Based on the work needed, choose the appropriate type (Bug, Feature, Task, Documentation, Refactoring)
 4. **Use the right template**: Apply the content structure that matches the task type
 5. **Create the task**: Use the notion-ai-tasks tool to create a well-structured task
+6. **Update status**: Update task status according to progress (Not Started → In Progress → Done)
 
 ### Example Workflow
 ```bash
