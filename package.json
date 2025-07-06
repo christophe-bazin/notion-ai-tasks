@@ -1,6 +1,6 @@
 {
   "name": "notion-ai-tasks",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "description": "Notion integration to read and create development project tasks",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,12 @@
     "type": "git",
     "url": "https://github.com/christophe-bazin/notion-ai-tasks.git"
   },
+  "files": [
+    "index.js",
+    "cli.js", 
+    "workflow-loader.js",
+    "workflows/"
+  ],
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "dotenv": "^16.3.1",

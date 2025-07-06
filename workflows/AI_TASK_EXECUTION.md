@@ -32,10 +32,12 @@ npx notion-ai-tasks update <task-id> -s [inProgressStatus]
 - Do NOT create your own todos
 - Follow the implementation plan specified in the task
 
-### Step 4: Update Todos During Development
+### Step 4: Update Todos IMMEDIATELY After Completion
 ```bash
+# Mark each todo as complete right after you implement it
 npx notion-ai-tasks update-todo <task-id> "todo text" -c true
 ```
+**Important**: Mark each todo as complete immediately after implementing it, not at the end!
 
 ### Step 4.5: Add Additional Content if Needed
 During execution, you MAY add additional content or todos if necessary for implementation:
@@ -64,7 +66,8 @@ npx notion-ai-tasks update <task-id> -s [completionStatus]
 ## ✅ ALWAYS DO THIS
 - Follow the exact workflow steps
 - Use the todos from Notion
-- Update progress in real-time
+- **Mark todos as complete IMMEDIATELY** when you finish each one
+- Update progress in real-time for better tracking
 - Add additional content/todos if needed (mark with [+])
 - Task automatically moves to [testStatus] when todos are complete
 - Only mark as [completionStatus] manually after testing/validation
@@ -78,8 +81,10 @@ npx notion-ai-tasks get 2270fffd93c2816c813cc1d32ad41a73
 npx notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "In Progress"
 
 # 3. Implement according to Notion task specs
-# 4. Update todos as you complete them
+# 4. Mark todos as complete IMMEDIATELY after implementing each one
 npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Setup database" -c true
+npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Create API endpoints" -c true
+npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Add unit tests" -c true
 
 # 4.5. Add additional content if discovered during implementation
 npx notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "Add input validation for edge cases [+]"
