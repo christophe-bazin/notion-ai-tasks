@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/christophe/notion-ai-tasks.git"
+    "url": "https://github.com/christophe-bazin/notion-ai-tasks.git"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
