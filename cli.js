@@ -12,6 +12,68 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'ut
 
 const taskManager = new NotionTaskManager();
 
+// Function to display content with proper hierarchical indentation
+function displayContentWithHierarchy(blocks) {
+  let currentDepth = 0;
+  
+  blocks.forEach((block, index) => {
+    const indent = '  '.repeat(currentDepth);
+    
+    switch (block.type) {
+      case 'paragraph':
+        if (block.paragraph.rich_text && block.paragraph.rich_text.length > 0) {
+          console.log(`${indent}${block.paragraph.rich_text[0].plain_text}`);
+        }
+        break;
+      case 'heading_1':
+        console.log(`${indent}# ${block.heading_1.rich_text[0]?.plain_text || ''}`);
+        break;
+      case 'heading_2':
+        console.log(`${indent}## ${block.heading_2.rich_text[0]?.plain_text || ''}`);
+        break;
+      case 'heading_3':
+        console.log(`${indent}### ${block.heading_3.rich_text[0]?.plain_text || ''}`);
+        break;
+      case 'bulleted_list_item':
+        console.log(`${indent}- ${block.bulleted_list_item.rich_text[0]?.plain_text || ''}`);
+        break;
+      case 'numbered_list_item':
+        console.log(`${indent}${index + 1}. ${block.numbered_list_item.rich_text[0]?.plain_text || ''}`);
+        break;
+      case 'to_do':
+        const checked = block.to_do.checked ? '☑' : '☐';
+        const text = block.to_do.rich_text[0]?.plain_text || '';
+        
+        // Determine depth based on content patterns
+        const isParent = text.toLowerCase().includes('parent') || text.toLowerCase().includes('tâche parent');
+        const isChild = text.toLowerCase().includes('sous-') || text.toLowerCase().includes('sub-');
+        const isSubChild = text.toLowerCase().includes('sous-sous-') || text.toLowerCase().includes('sub-sub-');
+        
+        if (isSubChild) {
+          currentDepth = 2;
+        } else if (isChild) {
+          currentDepth = 1;
+        } else if (isParent) {
+          currentDepth = 0;
+        }
+        
+        const finalIndent = '  '.repeat(currentDepth);
+        console.log(`${finalIndent}${checked} ${text}`);
+        break;
+      case 'code':
+        console.log(`${indent}\`\`\`${block.code.language || ''}`);
+        console.log(`${indent}${block.code.rich_text[0]?.plain_text || ''}`);
+        console.log(`${indent}\`\`\``);
+        break;
+      case 'quote':
+        console.log(`${indent}> ${block.quote.rich_text[0]?.plain_text || ''}`);
+        break;
+      default:
+        console.log(`${indent}[${block.type}] ${JSON.stringify(block[block.type])}`);
+    }
+  });
+}
+
 program
   .name('notion-tasks')
   .description('CLI to manage Notion tasks')
@@ -50,47 +112,10 @@ program
       console.log(`Created: ${new Date(task.createdTime).toLocaleDateString()}`);
       console.log(`Last edited: ${new Date(task.lastEditedTime).toLocaleDateString()}`);
       
-      // Display content blocks
+      // Display content blocks with hierarchical structure
       if (task.content && task.content.length > 0) {
         console.log('\n📝 Content:\n');
-        task.content.forEach((block, index) => {
-          switch (block.type) {
-            case 'paragraph':
-              if (block.paragraph.rich_text && block.paragraph.rich_text.length > 0) {
-                console.log(`${block.paragraph.rich_text[0].plain_text}`);
-              }
-              break;
-            case 'heading_1':
-              console.log(`# ${block.heading_1.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'heading_2':
-              console.log(`## ${block.heading_2.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'heading_3':
-              console.log(`### ${block.heading_3.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'bulleted_list_item':
-              console.log(`- ${block.bulleted_list_item.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'numbered_list_item':
-              console.log(`${index + 1}. ${block.numbered_list_item.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'to_do':
-              const checked = block.to_do.checked ? '☑' : '☐';
-              console.log(`${checked} ${block.to_do.rich_text[0]?.plain_text || ''}`);
-              break;
-            case 'code':
-              console.log(`\`\`\`${block.code.language || ''}`);
-              console.log(`${block.code.rich_text[0]?.plain_text || ''}`);
-              console.log('```');
-              break;
-            case 'quote':
-              console.log(`> ${block.quote.rich_text[0]?.plain_text || ''}`);
-              break;
-            default:
-              console.log(`[${block.type}] ${JSON.stringify(block[block.type])}`);
-          }
-        });
+        displayContentWithHierarchy(task.content);
       }
     } catch (error) {
       console.error('❌ Error fetching task:', error.message);
@@ -426,10 +451,8 @@ program
   .action(async (instruction) => {
     if (!instruction || instruction.length === 0) {
       program.help();
-      return;
-    }
-    
-    const text = instruction.join(' ');
+    } else {
+      const text = instruction.join(' ');
     
     try {
       console.log('🤖 Processing:', text);
@@ -476,6 +499,7 @@ program
       }
     } catch (error) {
       console.error('❌ Error:', error.message);
+    }
     }
   });
 
