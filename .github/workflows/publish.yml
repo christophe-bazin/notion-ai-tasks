@@ -33,14 +33,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.package-version.outputs.version }}
-          name: Release v${{ steps.package-version.outputs.version }}
-          body: |
-            Automated release for version ${{ steps.package-version.outputs.version }}
-            
-            Published to NPM: https://www.npmjs.com/package/notion-ai-tasks/v/${{ steps.package-version.outputs.version }}
-          draft: false
-          prerelease: false
