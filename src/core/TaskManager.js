@@ -1,5 +1,6 @@
 import NotionClient from './NotionClient.js';
 import { ContentManager } from './ContentManager.js';
+import { parseMarkdownToNotionBlocks } from '../utils/markdownParser.js';
 
 export class TaskManager {
   constructor() {
@@ -88,12 +89,7 @@ export class TaskManager {
 
 
       if (taskData.content) {
-        pageData.children = [{
-          type: 'paragraph',
-          paragraph: {
-            rich_text: [{ type: 'text', text: { content: taskData.content } }]
-          }
-        }];
+        pageData.children = parseMarkdownToNotionBlocks(taskData.content);
       }
 
       const response = await this.notion.pages.create(pageData);
