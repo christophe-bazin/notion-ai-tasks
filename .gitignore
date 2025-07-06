@@ -79,3 +79,6 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Claude Code settings
+.claude/
