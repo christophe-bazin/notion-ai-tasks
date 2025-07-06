@@ -58,7 +58,8 @@ npm install -g notion-ai-tasks
      "defaultStatus": "Not Started",
      "inProgressStatus": "In Progress",
      "testStatus": "Test",
-     "completionStatus": "Done"
+     "completionStatus": "Done",
+     "_aiInstructions": "🚨 CRITICAL: Use 'npx notion-ai-tasks' for all Notion operations. Find npm global modules with 'npm root -g', then read $(npm root -g)/notion-ai-tasks/AI_WORKFLOW_SELECTOR.md to choose the correct workflow, then follow it EXACTLY. NEVER use WebFetch for Notion URLs."
    }
    ```
 
@@ -177,7 +178,7 @@ notion-ai-tasks/
 All configuration is done via `notion-tasks.config.json`:
 - **Status Flow**: Configure the 4-stage status progression
 - **Custom Values**: Set your own priorities, types, and defaults
-- **AI Instructions**: Add project-specific AI guidance via `_aiInstructions`
+- **AI Instructions**: Critical AI guidance via `_aiInstructions` (directs AI to use correct workflows)
 
 ## 🔧 Development
 
