@@ -11,16 +11,31 @@ This file contains development guidelines for Claude Code when working on the `n
 3. **Configuration examples** in all .md files
 4. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
 
-### **Version Update Checklist:**
+### **Release Flow (GitHub Actions Automated Publishing):**
 ```bash
-# 1. Update package.json version
-npm version patch|minor|major
+# 1. Create release branch
+git checkout -b release/vX.X.X
 
-# 2. Update README.md with new features/options
-# 3. Update CLAUDE.md if project structure, practices, or guidelines changed
-# 4. Test configuration examples
-# 5. Commit changes with version tag
+# 2. Update package.json and package-lock.json versions
+npm version patch|minor|major --no-git-tag-version
+
+# 3. Update README.md with new features/options
+# 4. Update CLAUDE.md if project structure, practices, or guidelines changed
+# 5. Test configuration examples
+# 6. Commit and push release branch
+git add .
+git commit -m "bump version to X.X.X"
+git push origin release/vX.X.X
+
+# 7. Create PR from release branch to main
+# 8. After PR merge, GitHub Actions will automatically publish to npm
 ```
+
+### **Important Notes:**
+- **Always use release branches** for version updates
+- **Both package.json AND package-lock.json** must be updated with same version
+- **Use `--no-git-tag-version`** to prevent npm from creating tags locally
+- **GitHub Actions handles npm publishing** after PR merge to main
 
 ## 🛠️ **Technology Stack**
 
