@@ -1,5 +1,5 @@
 {
-  "name": "notion-ai-tasks",
+  "name": "notion-ai-tasks", 
   "version": "1.1.19",
   "description": "Notion integration to read and create development project tasks",
   "main": "index.js",
