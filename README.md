@@ -23,7 +23,7 @@ Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to sea
 
 ## 🎬 Demo
 
-![Work on Task Demo](https://github.com/user/notion-ai-tasks/raw/main/demo/work-on-task.mp4)
+[![Demo Video](https://img.youtube.com/vi/8haMvOBBpws/0.jpg)](https://www.youtube.com/watch?v=8haMvOBBpws)
 
 ## 🚀 Quick Start
 
