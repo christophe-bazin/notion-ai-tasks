@@ -2,6 +2,16 @@
 
 This guide is for AI assistants creating new development tasks in Notion.
 
+## 📝 Configuration Variables
+
+Values in `[brackets]` refer to configuration variables from `notion-tasks.config.json`:
+- `[inProgressStatus]` → Use value from `config.inProgressStatus`
+- `[testStatus]` → Use value from `config.testStatus` 
+- `[completionStatus]` → Use value from `config.completionStatus`
+- `[defaultStatus]` → Use value from `config.defaultStatus`
+- `[from priorities array]` → Use any value from `config.priorities` array
+- `[from types array]` → Use any value from `config.types` array
+
 ## 📝 Task Structure Templates
 
 Choose the appropriate template based on task type:
@@ -106,16 +116,16 @@ Problems with the current implementation.
 
 ```bash
 # Create a new task with specific properties
-npx notion-ai-tasks create "Task Title" -t "Feature" -p "High"
+npx notion-ai-tasks create "Fix login bug" -t "Bug" -p "High"
 
 # Update task immediately after creation
 npx notion-ai-tasks update <task-id> -s "In Progress"
 ```
 
 ## Task Properties
-- **Type**: [Bug|Feature|Task|Documentation|Refactoring]
-- **Priority**: [Low|Medium|High]
-- **Status**: [Not Started|In Progress|Done]
+- **Type**: Values from `types` array in configuration
+- **Priority**: Values from `priorities` array in configuration
+- **Status**: `defaultStatus`, `inProgressStatus`, `testStatus`, `completionStatus`
 
 ## Best Practices
 1. Use clear, action-oriented titles

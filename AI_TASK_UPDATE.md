@@ -2,12 +2,22 @@
 
 This guide is for AI assistants updating existing Notion tasks manually (not during execution).
 
+## 📝 Configuration Variables
+
+Values in `[brackets]` refer to configuration variables from `notion-tasks.config.json`:
+- `[inProgressStatus]` → Use value from `config.inProgressStatus`
+- `[testStatus]` → Use value from `config.testStatus` 
+- `[completionStatus]` → Use value from `config.completionStatus`
+- `[defaultStatus]` → Use value from `config.defaultStatus`
+- `[from priorities array]` → Use any value from `config.priorities` array
+- `[from types array]` → Use any value from `config.types` array
+
 ## 🔄 Update Commands Reference
 
 ### Basic Task Updates
 ```bash
 # Update task properties (status, priority, type)
-npx notion-ai-tasks update <task-id> -s "In Progress" -p "High" -t "Bug"
+npx notion-ai-tasks update <task-id> -s [inProgressStatus] -p [from priorities array] -t [from types array]
 
 # Update checkbox properties
 npx notion-ai-tasks update <task-id> -c "completed=true" -c "tested=false"
@@ -73,13 +83,6 @@ npx notion-ai-tasks progress <task-id>
 npx notion-ai-tasks update-status <task-id>
 ```
 
-## Configuration Reference
-
-The tool uses `notion-tasks.config.json` with these options:
-- **priorities**: ["Low", "Medium", "High"]
-- **types**: ["Bug", "Feature", "Task", "Documentation", "Refactoring"]  
-- **statuses**: ["Not Started", "In Progress", "Done"]
-- **defaults**: Medium priority, Task type, Not Started status
 
 ## Best Practices
 

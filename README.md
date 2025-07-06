@@ -1,123 +1,102 @@
 # Notion AI Tasks
 
-A Node.js application to read and create development project tasks in Notion.
+**AI-powered task management bridge between development workflows and Notion databases.**
 
-## Setup
+Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to seamlessly create, update, and execute development tasks stored in Notion. It provides structured workflows for task lifecycle management with automatic progress tracking and status transitions.
 
-1. Install the package globally:
-   ```bash
-   npm install -g notion-ai-tasks
-   ```
+## 🎯 Key Features
 
-2. Configure your Notion integration:
-   - Create a new integration at https://www.notion.so/my-integrations
-   - Create a database in Notion with the following properties:
-     - **Project name** (Title) - Required
-     - **Status** (Select) - Required with status options (ex: Not Started, In Progress, Done)
-     - **Priority** (Select) - Required with priority options (ex: Low, Medium, High)
-     - **Type** (Select) - Required with type options (ex: Bug, Feature, Task, Documentation, Refactoring)
+- **AI-First Design**: Built specifically for AI assistant workflows
+- **Automated Status Management**: Tasks automatically progress from "Not Started" → "In Progress" → "Test" → "Done"
+- **Progress Tracking**: Todo completion automatically updates task status
+- **Structured Templates**: Pre-defined task structures for bugs, features, documentation, and refactoring
+- **CLI & API**: Both command-line interface and programmatic access
+- **Configurable**: Customize statuses, priorities, and types per project
+
+## 🔄 How It Works
+
+1. **AI reads task specifications** from Notion database
+2. **AI updates task status** to "In Progress" and follows implementation plan
+3. **AI marks todos as complete** during development
+4. **System automatically moves task to "Test"** when all todos are done
+5. **Human manually marks as "Done"** after validation
+
+## 🚀 Quick Start
+
+### Installation
+```bash
+npm install -g notion-ai-tasks
+```
+
+### Setup
+
+1. **Create Notion Integration**:
+   - Go to https://www.notion.so/my-integrations
+   - Create new integration and copy the token
+
+2. **Setup Notion Database** with these properties:
+   - **Project name** (Title) - Required
+   - **Status** (Select) - Required with status options (as configured in `defaultStatus`, `inProgressStatus`, `testStatus`, `completionStatus`)
+   - **Priority** (Select) - Required with priority options (as configured in `priorities` array)
+   - **Type** (Select) - Required with type options (as configured in `types` array)
    - Share the database with your integration
 
-3. Create a configuration file in your project directory:
+3. **Configure Project** (in your project directory):
    ```bash
-   # In your project directory
    touch notion-tasks.config.json
    ```
 
-4. Configure the config file with your Notion credentials:
+4. **Add Configuration** (version 1.1.7):
    ```json
    {
      "notionToken": "your_notion_integration_token_here",
      "databaseId": "your_notion_database_id_here",
      "priorities": ["Low", "Medium", "High"],
      "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
-     "statuses": ["Not Started", "In Progress", "Done"],
      "defaultPriority": "Medium",
      "defaultType": "Task",
-     "defaultStatus": "Not Started"
+     "defaultStatus": "Not Started",
+     "inProgressStatus": "In Progress",
+     "testStatus": "Test",
+     "completionStatus": "Done"
    }
    ```
 
-5. Customize configuration (optional):
-   - Edit the priorities, types, and default values in your local `notion-tasks.config.json`
+## 📋 Usage
 
-## For AI Assistants
+### For AI Assistants
 
-When working with this tool, AI assistants should:
-1. Read the `AI_GUIDELINES.md` file to understand task structure templates
-2. Analyze the codebase to determine the appropriate task type
-3. Use the type-specific content templates when creating tasks
-4. Follow the structured approach for consistent task creation
-
-## Usage
+The tool includes comprehensive AI workflow guides:
+- **AI_TASK_EXECUTION.md** - Step-by-step execution workflow
+- **AI_TASK_CREATION.md** - Task creation templates and guidelines  
+- **AI_TASK_UPDATE.md** - Task update and progress management
 
 ### CLI Commands
 
-The tool is now installed globally via npm.
-
-List all tasks:
 ```bash
+# List all tasks
 notion-tasks list
+
+# Get task details
+notion-tasks get <task-id>
+
+# Create new task
+notion-tasks create "Fix login bug" -t "Bug" -p "High"
+
+# Update task status
+notion-tasks update <task-id> -s "In Progress"
+
+# Add content to task
+notion-tasks add-content <task-id> -c "Setup database connection"
+
+# Update todo progress
+notion-tasks update-todo <task-id> "Setup database" -c true
+
+# Check progress
+notion-tasks progress <task-id>
 ```
 
-Create a new task:
-```bash
-notion-tasks create "My task title"
-notion-tasks create "My task" -s "In Progress" -p "High" -t "Feature"
-```
-
-Update a task:
-```bash
-notion-tasks update <task-id> -s "Done" -p "Low" -t "Bug"
-```
-
-### Natural Language Commands
-
-You can also use natural language to interact with the tool:
-
-```bash
-# Create tasks
-notion-tasks create "Fix login bug"
-notion-tasks "créer Fix the header layout"
-
-# Update tasks  
-notion-tasks "update abc123 to In Progress"
-notion-tasks "modifier def456 vers Done"
-
-# List tasks
-notion-tasks "list tasks"
-notion-tasks "afficher les tâches"
-
-# Work on tasks (URL processing)
-notion-tasks "work on https://notion.so/task-url"
-```
-
-### Direct Usage
-
-Run the application:
-```bash
-npm start
-```
-
-For development with auto-reload:
-```bash
-npm run dev
-```
-
-## Features
-
-- Read tasks from Notion database
-- Create new tasks with title, status, priority, and type
-- Update existing tasks
-- CLI interface for easy task management
-- Configurable priorities and types via `config.json`
-- Export `NotionTaskManager` class for integration with other projects
-- Add content blocks (headings, paragraphs, todos, bullets) to tasks
-- Update todos within task content
-
-## API Usage
-
-### Basic Usage
+### API Usage
 
 ```javascript
 import { NotionTaskManager } from 'notion-ai-tasks';
@@ -162,11 +141,57 @@ await taskManager.addContentToTask(taskId, [
 await taskManager.updateTodoInContent(taskId, 'Complete this task', true);
 ```
 
-### Available Methods
+## 🛠️ API Methods
 
 - `getTasks()` - Returns array of all tasks
+- `getTask(taskId)` - Get specific task with content
 - `createTask(taskData)` - Creates new task
 - `updateTask(taskId, updates)` - Updates task properties
 - `addContentToTask(taskId, content)` - Adds content blocks to task
 - `updateTodoInContent(taskId, todoText, checked)` - Updates specific todo
-- `getTaskContent(taskId)` - Gets all content blocks from task
+- `getTaskProgress(taskId)` - Gets completion percentage
+- `markTaskProgress(taskId, steps)` - Mark multiple steps complete
+- `updateTaskStatusBasedOnProgress(taskId)` - Auto-update status based on progress
+
+## 📁 Project Structure
+
+```
+notion-ai-tasks/
+├── index.js                    # Core NotionTaskManager class
+├── cli.js                      # Command-line interface
+├── notion-tasks.config.json    # Project configuration
+├── AI_TASK_EXECUTION.md        # AI execution workflow
+├── AI_TASK_CREATION.md         # AI task creation guide
+├── AI_TASK_UPDATE.md           # AI task update guide
+└── AI_WORKFLOW_SELECTOR.md     # AI workflow selector
+```
+
+## 🤖 AI Compatibility
+
+- **Claude Code**: Full integration with command execution
+- **GitHub Copilot**: Can generate correct commands (manual execution)
+- **Other AI tools**: Compatible with workflow guidelines (manual execution)
+
+## 📝 Configuration Options
+
+All configuration is done via `notion-tasks.config.json`:
+- **Status Flow**: Configure the 4-stage status progression
+- **Custom Values**: Set your own priorities, types, and defaults
+- **AI Instructions**: Add project-specific AI guidance via `_aiInstructions`
+
+## 🔧 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run locally
+npm start
+
+# Development with auto-reload
+npm run dev
+```
+
+## 📄 License
+
+MIT License - see LICENSE file for details.

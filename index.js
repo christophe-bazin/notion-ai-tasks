@@ -1,13 +1,12 @@
 import { Client } from '@notionhq/client';
 import fs from 'fs';
-import path from 'path';
 
-// Load config from local project directory
+// Load configuration from notion-tasks.config.json in current directory
 let config;
 try {
   config = JSON.parse(fs.readFileSync('./notion-tasks.config.json', 'utf8'));
   
-  // Show AI instructions if present
+  // Display AI instructions from configuration if defined
   if (config._aiInstructions) {
     console.log('🤖 AI Instructions:', config._aiInstructions);
   }
@@ -58,7 +57,7 @@ export class NotionTaskManager {
           lastEditedTime: task.last_edited_time,
         };
 
-        // Add all checkbox properties
+        // Include all checkbox properties from database schema
         Object.keys(schema).forEach(propName => {
           if (schema[propName].type === 'checkbox') {
             taskData[propName.toLowerCase()] = task.properties[propName]?.checkbox || false;
@@ -105,7 +104,7 @@ export class NotionTaskManager {
         },
       };
 
-      // Add content if provided
+      // Append content blocks to page if specified
       if (taskData.content) {
         pageData.children = taskData.content;
       }
@@ -130,7 +129,7 @@ export class NotionTaskManager {
       const schema = await this.getDatabaseSchema();
       const properties = {};
 
-      // Handle standard properties
+      // Update standard task properties (status, priority, type)
       if (updates.status) {
         properties.Status = {
           status: { name: updates.status }
@@ -147,9 +146,9 @@ export class NotionTaskManager {
         };
       }
 
-      // Handle checkbox properties
+      // Update checkbox properties with case-insensitive matching
       Object.keys(updates).forEach(key => {
-        // Find the actual property name in schema (case insensitive)
+        // Match property name from schema ignoring case
         const actualPropName = Object.keys(schema).find(prop => 
           prop.toLowerCase() === key.toLowerCase() && schema[prop].type === 'checkbox'
         );
@@ -204,14 +203,14 @@ export class NotionTaskManager {
         url: response.url
       };
 
-      // Add all checkbox properties
+      // Include all checkbox properties from database schema
       Object.keys(schema).forEach(propName => {
         if (schema[propName].type === 'checkbox') {
           taskData[propName.toLowerCase()] = response.properties[propName]?.checkbox || false;
         }
       });
 
-      // Get content blocks
+      // Retrieve all content blocks from task
       const contentResponse = await this.notion.blocks.children.list({
         block_id: taskId
       });
@@ -240,7 +239,7 @@ export class NotionTaskManager {
     try {
       const blocks = await this.getTaskContent(taskId);
       
-      // Find the todo block by text content
+      // Locate todo block matching the specified text
       const todoBlock = blocks.find(block => 
         block.type === 'to_do' && 
         block.to_do.rich_text[0]?.plain_text.includes(todoText)
@@ -250,7 +249,7 @@ export class NotionTaskManager {
         throw new Error(`Todo containing "${todoText}" not found`);
       }
 
-      // Update the todo block
+      // Update todo block checked state
       await this.notion.blocks.update({
         block_id: todoBlock.id,
         to_do: {
@@ -287,7 +286,7 @@ export class NotionTaskManager {
         }
       }
       
-      // Execute all updates in parallel
+      // Apply all todo updates simultaneously
       await Promise.all(updates.map(update => 
         this.notion.blocks.update({
           block_id: update.blockId,
@@ -314,7 +313,7 @@ export class NotionTaskManager {
         return { success: false, message: 'No todo items found in task' };
       }
 
-      // Mark specified number of steps as completed
+      // Mark first N unchecked todos as completed
       const updates = [];
       for (let i = 0; i < Math.min(completedSteps, todoBlocks.length); i++) {
         const todoBlock = todoBlocks[i];
@@ -326,7 +325,7 @@ export class NotionTaskManager {
         }
       }
 
-      // Execute updates
+      // Apply all todo updates simultaneously
       await Promise.all(updates.map(update => 
         this.notion.blocks.update({
           block_id: update.blockId,
@@ -337,7 +336,7 @@ export class NotionTaskManager {
         })
       ));
 
-      // Update task status based on progress
+      // Auto-update task status based on completion percentage
       const statusUpdate = await this.updateTaskStatusBasedOnProgress(taskId);
 
       return { 
@@ -378,19 +377,24 @@ export class NotionTaskManager {
       let newStatus = null;
 
       if (progress.percentage === 0) {
-        newStatus = config.statuses.find(s => s.includes('Not Started') || s.includes('To Do')) || config.statuses[0];
+        if (!config.defaultStatus) {
+          throw new Error('defaultStatus is required in configuration');
+        }
+        newStatus = config.defaultStatus;
       } else if (progress.percentage === 100) {
-        newStatus = config.statuses.find(s => s.includes('Done') || s.includes('Completed')) || config.statuses[config.statuses.length - 1];
+        if (!config.testStatus) {
+          throw new Error('testStatus is required in configuration');
+        }
+        newStatus = config.testStatus;
       } else if (progress.percentage > 0) {
-        newStatus = config.statuses.find(s => s.includes('In Progress') || s.includes('Working')) || config.statuses[1];
+        if (!config.inProgressStatus) {
+          throw new Error('inProgressStatus is required in configuration');
+        }
+        newStatus = config.inProgressStatus;
       }
 
-      if (newStatus) {
-        await this.updateTask(taskId, { status: newStatus });
-        return { success: true, newStatus, progress };
-      }
-
-      return { success: false, message: 'No appropriate status found' };
+      await this.updateTask(taskId, { status: newStatus });
+      return { success: true, newStatus, progress };
     } catch (error) {
       console.error('Error updating task status based on progress:', error);
       throw error;
