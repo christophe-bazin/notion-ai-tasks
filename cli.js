@@ -103,6 +103,7 @@ program
   .option('-s, --status <status>', 'Task status')
   .option('-p, --priority <priority>', 'Task priority')
   .option('-t, --type <type>', 'Task type')
+  .option('-d, --description <description>', 'Task description')
   .option('-c, --content <content>', 'Task content (markdown format)')
   .action(async (title, options) => {
     try {
@@ -113,7 +114,18 @@ program
         type: options.type
       };
 
-      // Parse content if provided
+      // Handle description by converting to content
+      if (options.description) {
+        const descriptionContent = [{
+          type: 'paragraph',
+          paragraph: {
+            rich_text: [{ type: 'text', text: { content: options.description } }]
+          }
+        }];
+        taskData.content = descriptionContent;
+      }
+
+      // Parse content if provided (overrides description)
       if (options.content) {
         const content = parseMarkdownToBlocks(options.content);
         taskData.content = content;
