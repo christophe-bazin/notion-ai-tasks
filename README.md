@@ -50,7 +50,7 @@ npm install -g notion-ai-tasks
    touch notion-tasks.config.json
    ```
 
-4. **Add Configuration** (version 1.1.11):
+4. **Add Configuration**:
    ```json
    {
      "notionToken": "your_notion_integration_token_here",

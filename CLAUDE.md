@@ -7,7 +7,6 @@ This file contains development guidelines for Claude Code when working on the `n
 ### **Always Update After Changes:**
 
 1. **README.md** - Keep documentation current
-2. **Version in README.md** - Update `**Add Configuration** (version X.X.X):` section
 3. **package.json** - Bump version following semver
 4. **Configuration examples** in all .md files
 5. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
