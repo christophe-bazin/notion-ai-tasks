@@ -32,17 +32,11 @@ What is the issue and how it manifests.
 
 ## Root Cause Analysis
 - [ ] Identify the root cause
-  - [ ] Review error logs
-  - [ ] Trace code execution
 - [ ] Document findings
 
 ## Fix Implementation
 - [ ] Implement solution
-  - [ ] Update affected components
-  - [ ] Validate fix locally
 - [ ] Test the fix
-  - [ ] Manual testing
-  - [ ] Automated tests
 - [ ] Add regression test
 ```
 
@@ -56,17 +50,11 @@ Why this feature is needed.
 
 ## Implementation
 - [ ] Step 1
-  - [ ] Sub-step 1.1
-  - [ ] Sub-step 1.2
 - [ ] Step 2
-  - [ ] Sub-step 2.1
-  - [ ] Sub-step 2.2
 - [ ] Step 3
 
 ## Acceptance Criteria
 - [ ] Criterion 1
-  - [ ] Detailed check 1.1
-  - [ ] Detailed check 1.2
 - [ ] Criterion 2
 - [ ] Criterion 3
 
@@ -77,14 +65,8 @@ Why this feature is needed.
 
 ## Testing Requirements
 - [ ] Unit tests
-  - [ ] Core functionality tests
-  - [ ] Edge case tests
 - [ ] Integration tests
-  - [ ] API integration
-  - [ ] UI integration
 - [ ] Manual testing steps
-  - [ ] User flow validation
-  - [ ] Performance testing
 ```
 
 ### For Documentation
@@ -97,23 +79,12 @@ What should be covered in the documentation.
 
 ## Implementation
 - [ ] Research existing documentation
-  - [ ] Audit current docs
-  - [ ] Identify gaps
 - [ ] Create/update content
-  - [ ] Write content sections
-  - [ ] Add code examples
-  - [ ] Include diagrams if needed
 - [ ] Review and validate
-  - [ ] Technical review
-  - [ ] User testing
 
 ## Acceptance Criteria
 - [ ] Documentation is complete
-  - [ ] All sections covered
-  - [ ] Proper formatting applied
 - [ ] Examples are provided
-  - [ ] Code examples work
-  - [ ] Screenshots included
 - [ ] Content is accurate and up-to-date
 ```
 
@@ -132,58 +103,30 @@ Problems with the current implementation.
 
 ## Implementation
 - [ ] Identify refactoring targets
-  - [ ] Analyze code complexity
-  - [ ] Identify problem areas
 - [ ] Plan refactoring approach
-  - [ ] Define refactoring strategy
-  - [ ] Plan implementation phases
 - [ ] Execute refactoring
-  - [ ] Phase 1: Core changes
-  - [ ] Phase 2: Supporting changes
-  - [ ] Phase 3: Cleanup
 - [ ] Ensure no functionality changes
-  - [ ] Run test suite
-  - [ ] Manual verification
 
 ## Testing Requirements
 - [ ] All existing tests still pass
-  - [ ] Unit tests
-  - [ ] Integration tests
 - [ ] No regression in functionality
-  - [ ] Manual testing
-  - [ ] Performance validation
 ```
 
 ## Creation Commands
-
-Use these exact commands to create tasks:
 
 ```bash
 # Create a new task with specific properties
 npx notion-ai-tasks create "Fix login bug" --type "Bug" --priority "High" --status "Not Started"
 
 # Create with content
-npx notion-ai-tasks create "Fix login bug" --content "Bug description and implementation steps" --type "Bug" --priority "High"
+npx notion-ai-tasks create "Fix login bug" --content "Brief description of the bug" --type "Bug" --priority "High"
 
+# Add todos after creation
+npx notion-ai-tasks todo [taskId] "Step 1" false
+npx notion-ai-tasks todo [taskId] "Step 2" false
 
-```
-
-## Adding Nested Todos After Creation
-
-Once a task is created, add nested todos to break down work:
-
-```bash
-# Add main todos
-npx notion-ai-tasks todo [taskId] "Phase 1: Analysis" false
-npx notion-ai-tasks todo [taskId] "Phase 2: Implementation" false
-
-# Add nested sub-todos (2 spaces = 1 level)
-npx notion-ai-tasks todo [taskId] "  Research requirements" false
-npx notion-ai-tasks todo [taskId] "  Create design docs" false
-
-# Add deeply nested todos (4 spaces = 2 levels)
-npx notion-ai-tasks todo [taskId] "    Review existing docs" false
-npx notion-ai-tasks todo [taskId] "    Interview stakeholders" false
+# Update task status
+npx notion-ai-tasks update <task-id> --status "In Progress"
 ```
 
 ## Task Properties

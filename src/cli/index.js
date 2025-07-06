@@ -66,7 +66,7 @@ program
 
 program
   .command('todo <taskId> <todoText> <checked>')
-  .description('Create or update a todo item within a task (use spaces for indentation)')
+  .description('Create or update a todo item within a task')
   .action(async (taskId, todoText, checked) => {
     taskManager = taskManager || new TaskManager();
     const isChecked = checked === 'true' || checked === '1';

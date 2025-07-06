@@ -125,24 +125,18 @@ notion-tasks update <task-id> --title "Updated title" --type "Documentation"
 - `-p, --priority` - New priority
 - `--type` - New type
 
-#### Nested Todo Management
+#### Todo Management
 ```bash
-# Add main todo
-notion-tasks todo <task-id> "Main task" false
-
-# Add nested todo (2 spaces = 1 level)
-notion-tasks todo <task-id> "  Sub-task" false
-
-# Add deeply nested todo (4 spaces = 2 levels)
-notion-tasks todo <task-id> "    Sub-sub-task" false
+# Add todo
+notion-tasks todo <task-id> "Task to complete" false
 
 # Mark todo as completed
-notion-tasks todo <task-id> "Main task" true
+notion-tasks todo <task-id> "Task to complete" true
 ```
 
 **Todo Command:**
 - `<task-id>` - Task ID (required)
-- `<todoText>` - Todo text with spaces for indentation
+- `<todoText>` - Todo text
 - `<checked>` - true/false or 1/0 for completion status
 
 #### Natural Language Commands (AI assistants)

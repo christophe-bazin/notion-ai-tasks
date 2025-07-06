@@ -47,7 +47,8 @@ export class ContentManager {
     const allBlocks = [];
     
     for (const block of blocks) {
-      allBlocks.push(block);
+      // Add the block with its children preserved
+      const blockWithChildren = { ...block };
       
       if (block.has_children) {
         try {
@@ -55,11 +56,14 @@ export class ContentManager {
             block_id: block.id
           });
           const childBlocks = await this.getAllBlocksRecursively(childrenResponse.results);
-          allBlocks.push(...childBlocks);
+          blockWithChildren.children = childBlocks;
         } catch (error) {
           console.error(`Error getting children for block ${block.id}:`, error);
+          blockWithChildren.children = [];
         }
       }
+      
+      allBlocks.push(blockWithChildren);
     }
     
     return allBlocks;
@@ -70,7 +74,6 @@ export class ContentManager {
       const blocks = await this.getTaskContent(taskId);
       
       const cleanTodoText = todoText.trim();
-      const indentLevel = todoText.length - cleanTodoText.length;
       
       const todoBlock = blocks.find(block => 
         block.type === 'to_do' && 
@@ -78,10 +81,8 @@ export class ContentManager {
       );
 
       if (!todoBlock) {
-        const parentBlockId = await this.findParentBlockForTodo(taskId, blocks, indentLevel);
-        
         await this.notion.blocks.children.append({
-          block_id: parentBlockId,
+          block_id: taskId,
           children: [{
             type: 'to_do',
             to_do: {
@@ -108,30 +109,4 @@ export class ContentManager {
     }
   }
 
-  async findParentBlockForTodo(taskId, blocks, indentLevel) {
-    if (indentLevel === 0) {
-      return taskId;
-    }
-
-    const parentIndentLevel = indentLevel - 2;
-    
-    for (let i = blocks.length - 1; i >= 0; i--) {
-      const block = blocks[i];
-      if (block.type === 'to_do') {
-        const blockText = block.to_do.rich_text[0]?.plain_text || '';
-        const blockIndent = this.calculateIndentLevel(blockText);
-        
-        if (blockIndent === parentIndentLevel) {
-          return block.id;
-        }
-      }
-    }
-    
-    return taskId;
-  }
-
-  calculateIndentLevel(text) {
-    const match = text.match(/^(\s*)/);
-    return match ? match[1].length : 0;
-  }
 }
