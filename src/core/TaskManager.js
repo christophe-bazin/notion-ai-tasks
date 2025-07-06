@@ -86,8 +86,14 @@ export class TaskManager {
         },
       };
 
+
       if (taskData.content) {
-        pageData.children = taskData.content;
+        pageData.children = [{
+          type: 'paragraph',
+          paragraph: {
+            rich_text: [{ type: 'text', text: { content: taskData.content } }]
+          }
+        }];
       }
 
       const response = await this.notion.pages.create(pageData);

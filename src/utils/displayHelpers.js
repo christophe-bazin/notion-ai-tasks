@@ -1,8 +1,10 @@
 export function displayContentWithHierarchy(blocks) {
-  let currentDepth = 0;
-  
+  displayBlocksWithDepth(blocks, 0);
+}
+
+function displayBlocksWithDepth(blocks, depth) {
   blocks.forEach((block, index) => {
-    const indent = '  '.repeat(currentDepth);
+    const indent = '  '.repeat(depth);
     
     switch (block.type) {
       case 'paragraph':
@@ -21,28 +23,24 @@ export function displayContentWithHierarchy(blocks) {
         break;
       case 'bulleted_list_item':
         console.log(`${indent}- ${block.bulleted_list_item.rich_text[0]?.plain_text || ''}`);
+        if (block.children && block.children.length > 0) {
+          displayBlocksWithDepth(block.children, depth + 1);
+        }
         break;
       case 'numbered_list_item':
         console.log(`${indent}${index + 1}. ${block.numbered_list_item.rich_text[0]?.plain_text || ''}`);
+        if (block.children && block.children.length > 0) {
+          displayBlocksWithDepth(block.children, depth + 1);
+        }
         break;
       case 'to_do':
         const checked = block.to_do.checked ? '☑' : '☐';
         const text = block.to_do.rich_text[0]?.plain_text || '';
+        console.log(`${indent}${checked} ${text}`);
         
-        const isParent = text.toLowerCase().includes('parent') || text.toLowerCase().includes('tâche parent');
-        const isChild = text.toLowerCase().includes('sous-') || text.toLowerCase().includes('sub-');
-        const isSubChild = text.toLowerCase().includes('sous-sous-') || text.toLowerCase().includes('sub-sub-');
-        
-        if (isSubChild) {
-          currentDepth = 2;
-        } else if (isChild) {
-          currentDepth = 1;
-        } else if (isParent) {
-          currentDepth = 0;
+        if (block.children && block.children.length > 0) {
+          displayBlocksWithDepth(block.children, depth + 1);
         }
-        
-        const finalIndent = '  '.repeat(currentDepth);
-        console.log(`${finalIndent}${checked} ${text}`);
         break;
       case 'code':
         console.log(`${indent}\`\`\`${block.code.language || ''}`);

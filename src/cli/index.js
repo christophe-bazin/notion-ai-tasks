@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf8'));
 
-const taskManager = new TaskManager();
+let taskManager;
 
 program
   .name('notion-tasks')
@@ -28,6 +28,7 @@ program
   .command('list')
   .description('List all tasks')
   .action(async () => {
+    taskManager = taskManager || new TaskManager();
     await listCommand(taskManager);
   });
 
@@ -35,6 +36,7 @@ program
   .command('show <taskId>')
   .description('Show detailed information about a specific task')
   .action(async (taskId) => {
+    taskManager = taskManager || new TaskManager();
     await showCommand(taskManager, taskId);
   });
 
@@ -44,7 +46,9 @@ program
   .option('-s, --status <status>', 'Task status')
   .option('-p, --priority <priority>', 'Task priority')
   .option('-t, --type <type>', 'Task type')
+  .option('-c, --content <content>', 'Task content/description')
   .action(async (title, options) => {
+    taskManager = taskManager || new TaskManager();
     await createCommand(taskManager, title, options);
   });
 
@@ -56,13 +60,15 @@ program
   .option('-p, --priority <priority>', 'New priority')
   .option('--type <type>', 'New type')
   .action(async (taskId, options) => {
+    taskManager = taskManager || new TaskManager();
     await updateCommand(taskManager, taskId, options);
   });
 
 program
   .command('todo <taskId> <todoText> <checked>')
-  .description('Update a todo item within a task')
+  .description('Create or update a todo item within a task (use spaces for indentation)')
   .action(async (taskId, todoText, checked) => {
+    taskManager = taskManager || new TaskManager();
     const isChecked = checked === 'true' || checked === '1';
     await todoCommand(taskManager, taskId, todoText, isChecked);
   });
@@ -73,12 +79,29 @@ program
     if (!instruction || instruction.length === 0) {
       program.help();
     } else {
+      taskManager = taskManager || new TaskManager();
       await naturalCommand(taskManager, instruction);
     }
   });
 
-function collect(value, previous) {
-  return previous.concat([value]);
-}
+program.exitOverride();
 
-program.parse();
+program.configureOutput({
+  writeErr: (str) => {
+    if (str.includes('unknown option')) {
+      console.error(`❌ ${str.replace('error: ', '')}`);
+      console.log('\n💡 Use --help to see available options');
+    } else {
+      console.error(str);
+    }
+  },
+  writeOut: (str) => {
+    console.log(str);
+  }
+});
+
+try {
+  program.parse();
+} catch (error) {
+  process.exit(1);
+}

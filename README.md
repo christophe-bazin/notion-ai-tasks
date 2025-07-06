@@ -85,66 +85,65 @@ The tool includes comprehensive AI workflow guides:
 # List all tasks
 notion-tasks list
 
-# Get task details (accepts URLs or task IDs)
-notion-tasks get <task-id-or-url>
-notion-tasks get "https://www.notion.so/...?p=2270fffd93c281b689c1c66099b13ef9"
-
-# Check progress
-notion-tasks progress <task-id>
+# Show task details (accepts URLs or task IDs)
+notion-tasks show <task-id-or-url>
+notion-tasks show "https://www.notion.so/...?p=2270fffd93c281b689c1c66099b13ef9"
 ```
 
 #### Task Creation
 ```bash
 # Create new task (basic)
-notion-tasks create "Fix login bug" -t "Bug" -p "High" -s "Not Started"
+notion-tasks create "Fix login bug" --type "Bug" --priority "High" --status "Not Started"
 
-# Create with description
-notion-tasks create "Fix login bug" -d "User cannot login due to authentication error" -t "Bug" -p "High"
+# Create with content/description
+notion-tasks create "Fix login bug" --content "User cannot login due to authentication error" --type "Bug" --priority "High"
 
-# Create with structured content (markdown)
-notion-tasks create "Fix login bug" -t "Bug" -p "High" -c "## Problem\nUser login fails\n\n## Steps\n- [ ] Investigate auth flow\n- [ ] Fix bug\n- [ ] Test fix"
+# Create with full description
+notion-tasks create "Implement new feature" --content "## Problem\nUsers need better search\n\n## Solution\nAdd advanced filters" --type "Feature"
 ```
 
 **Create Command Options:**
 - `<title>` - Task title (required)
-- `-d, --description` - Brief description (converted to paragraph)
 - `-s, --status` - Task status
 - `-p, --priority` - Task priority  
 - `-t, --type` - Task type
-- `-c, --content` - Full markdown content (overrides description)
+- `-c, --content` - Task description/content
 
 #### Task Updates
 ```bash
 # Update task properties
-notion-tasks update <task-id> -s "In Progress" -p "High"
+notion-tasks update <task-id> --status "In Progress" --priority "High"
 
-# Update checkbox properties
-notion-tasks update <task-id> -c "completed=true" -c "tested=false"
-
-# Add content to existing task
-notion-tasks update <task-id> --content "## Additional Notes\nNew requirements found\n\n- [ ] Extra validation needed"
+# Update title and type
+notion-tasks update <task-id> --title "Updated title" --type "Documentation"
 ```
 
 **Update Command Options:**
-- `<id>` - Task ID (required)
+- `<task-id>` - Task ID (required)
+- `-t, --title` - New title
 - `-s, --status` - New status
 - `-p, --priority` - New priority
-- `-t, --type` - New type
-- `-c, --checkbox` - Update checkbox (format: name=true/false)
-- `--content` - Add markdown content (**NOT** `-c`, which is for checkboxes)
+- `--type` - New type
 
-#### Content Management
+#### Nested Todo Management
 ```bash
-# Add structured content blocks
-notion-tasks add-content <task-id> -c "Setup database connection"
-notion-tasks add-content <task-id> -h "New Section" -t "Description text"
+# Add main todo
+notion-tasks todo <task-id> "Main task" false
 
-# Update individual todos
-notion-tasks update-todo <task-id> "Setup database" -c true
+# Add nested todo (2 spaces = 1 level)
+notion-tasks todo <task-id> "  Sub-task" false
 
-# Update multiple todos at once
-notion-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true}]'
+# Add deeply nested todo (4 spaces = 2 levels)
+notion-tasks todo <task-id> "    Sub-sub-task" false
+
+# Mark todo as completed
+notion-tasks todo <task-id> "Main task" true
 ```
+
+**Todo Command:**
+- `<task-id>` - Task ID (required)
+- `<todoText>` - Todo text with spaces for indentation
+- `<checked>` - true/false or 1/0 for completion status
 
 #### Natural Language Commands (AI assistants)
 ```bash

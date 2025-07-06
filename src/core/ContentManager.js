@@ -69,13 +69,28 @@ export class ContentManager {
     try {
       const blocks = await this.getTaskContent(taskId);
       
+      const cleanTodoText = todoText.trim();
+      const indentLevel = todoText.length - cleanTodoText.length;
+      
       const todoBlock = blocks.find(block => 
         block.type === 'to_do' && 
-        block.to_do.rich_text[0]?.plain_text.includes(todoText)
+        block.to_do.rich_text[0]?.plain_text.trim() === cleanTodoText
       );
 
       if (!todoBlock) {
-        throw new Error(`Todo containing "${todoText}" not found`);
+        const parentBlockId = await this.findParentBlockForTodo(taskId, blocks, indentLevel);
+        
+        await this.notion.blocks.children.append({
+          block_id: parentBlockId,
+          children: [{
+            type: 'to_do',
+            to_do: {
+              rich_text: [{ type: 'text', text: { content: cleanTodoText } }],
+              checked: checked
+            }
+          }]
+        });
+        return { success: true, created: true };
       }
 
       await this.notion.blocks.update({
@@ -86,10 +101,37 @@ export class ContentManager {
         }
       });
 
-      return { success: true };
+      return { success: true, created: false };
     } catch (error) {
       console.error('Error updating todo:', error);
       throw error;
     }
+  }
+
+  async findParentBlockForTodo(taskId, blocks, indentLevel) {
+    if (indentLevel === 0) {
+      return taskId;
+    }
+
+    const parentIndentLevel = indentLevel - 2;
+    
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      const block = blocks[i];
+      if (block.type === 'to_do') {
+        const blockText = block.to_do.rich_text[0]?.plain_text || '';
+        const blockIndent = this.calculateIndentLevel(blockText);
+        
+        if (blockIndent === parentIndentLevel) {
+          return block.id;
+        }
+      }
+    }
+    
+    return taskId;
+  }
+
+  calculateIndentLevel(text) {
+    const match = text.match(/^(\s*)/);
+    return match ? match[1].length : 0;
   }
 }
