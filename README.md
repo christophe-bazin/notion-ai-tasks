@@ -50,7 +50,7 @@ npm install -g notion-ai-tasks
    touch notion-tasks.config.json
    ```
 
-4. **Add Configuration** (version 1.1.8):
+4. **Add Configuration** (version 1.1.9):
    ```json
    {
      "notionToken": "your_notion_integration_token_here",
@@ -63,7 +63,7 @@ npm install -g notion-ai-tasks
      "inProgressStatus": "In Progress",
      "testStatus": "Test",
      "completionStatus": "Done",
-     "_aiInstructions": "🚨 CRITICAL: Use 'npx notion-ai-tasks' for all Notion operations. Find npm global modules with 'npm root -g', then read $(npm root -g)/notion-ai-tasks/AI_WORKFLOW_SELECTOR.md to choose the correct workflow, then follow it EXACTLY. NEVER use WebFetch for Notion URLs."
+     "_aiInstructions": "🚀 Use 'npx notion-ai-tasks' for all Notion operations. Find npm global modules with 'npm root -g', then read $(npm root -g)/notion-ai-tasks/AI_WORKFLOW_SELECTOR.md to choose the correct workflow, then follow it EXACTLY. NEVER use WebFetch for Notion URLs."
    }
    ```
 
