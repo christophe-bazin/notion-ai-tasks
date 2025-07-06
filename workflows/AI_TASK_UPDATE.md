@@ -21,6 +21,9 @@ npx notion-ai-tasks update <task-id> -s [inProgressStatus] -p [from priorities a
 
 # Update checkbox properties
 npx notion-ai-tasks update <task-id> -c "completed=true" -c "tested=false"
+
+# Add content to existing task
+npx notion-ai-tasks update <task-id> --content "## New Section\nContent in markdown format\n\n- [ ] New todo item"
 ```
 
 ### Todo Management
@@ -51,7 +54,10 @@ npx notion-ai-tasks progress <task-id>
 # First get current task content
 npx notion-ai-tasks get <task-id>
 
-# Then update with additional todos or requirements
+# Add structured content with new requirements
+npx notion-ai-tasks update <task-id> --content "## Additional Requirements\n- [ ] New requirement 1\n- [ ] New requirement 2"
+
+# Or add individual todo items
 npx notion-ai-tasks update-todo <task-id> "New requirement" -c false
 ```
 
@@ -84,6 +90,24 @@ npx notion-ai-tasks update-status <task-id>
 ```
 
 
+## Important: Command Options Reference
+
+### Create Command Options
+- `<title>` - Task title (required, positional argument)
+- `-d, --description` - Brief description (converted to paragraph content)
+- `-s, --status` - Task status
+- `-p, --priority` - Task priority
+- `-t, --type` - Task type
+- `-c, --content` - Full markdown content (overrides description)
+
+### Update Command Options
+- `<id>` - Task ID (required, positional argument)
+- `-s, --status` - New status
+- `-p, --priority` - New priority
+- `-t, --type` - New type
+- `-c, --checkbox` - Update checkbox properties (format: name=true/false)
+- `--content` - Add markdown content to task (NOT -c, which is for checkboxes)
+
 ## Best Practices
 
 1. **Always check current state first**: Use `npx notion-ai-tasks get <task-id>` before making updates
@@ -91,6 +115,7 @@ npx notion-ai-tasks update-status <task-id>
 3. **Use bulk updates**: For multiple todo changes, use `update-multiple-todos`
 4. **Track progress**: Use `progress` command to see completion percentage
 5. **Auto-update status**: Use `update-status` to automatically set status based on todo completion
+6. **Content vs Checkbox**: Use `--content` for markdown content, `-c` for checkbox properties
 
 ## Example: Complete Update Workflow
 ```bash

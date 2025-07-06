@@ -116,7 +116,13 @@ Problems with the current implementation.
 
 ```bash
 # Create a new task with specific properties
-npx notion-ai-tasks create "Fix login bug" -t "Bug" -p "High"
+npx notion-ai-tasks create "Fix login bug" -t "Bug" -p "High" -s "Not Started"
+
+# Create with description
+npx notion-ai-tasks create "Fix login bug" -d "Brief description of the bug" -t "Bug" -p "High"
+
+# Create with structured content
+npx notion-ai-tasks create "Fix login bug" -t "Bug" -p "High" -c "## Problem\nDescription of the issue\n\n## Steps\n- [ ] Step 1\n- [ ] Step 2"
 
 # Update task immediately after creation
 npx notion-ai-tasks update <task-id> -s "In Progress"
