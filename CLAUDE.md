@@ -128,32 +128,7 @@ npx notion-ai-tasks list
 node -e "console.log(JSON.parse(require('fs').readFileSync('./notion-tasks.config.json')))"
 ```
 
-## 📐 **Status Management System**
-
-### **Status Flow:**
-```
-Not Started → In Progress → Test → Done
-     ↑            ↑          ↑      ↑
-defaultStatus  inProgressStatus  testStatus  completionStatus
-```
-
-### **Automatic Transitions:**
-- **0% progress** → `defaultStatus`
-- **1-99% progress** → `inProgressStatus`  
-- **100% progress** → `testStatus` (automatic)
-- **After validation** → `completionStatus` (manual only)
-
-### **Important Rules:**
-- **Never auto-complete to "Done"** - Only `testStatus` is automatic
-- **Always use config variables** - No hardcoded status strings
-- **Throw errors for missing config** - Don't fall back silently
-
 ## 🎨 **Notion Integration Guidelines**
-
-### **Content Structure:**
-- **Rich text format** - Use Notion's rich text structure
-- **Block types** - Support heading_2, paragraph, to_do, bulleted_list_item
-- **Todo management** - Support checking/unchecking todos in content
 
 ### **Error Handling:**
 ```javascript
@@ -165,10 +140,12 @@ try {
 }
 ```
 
-### **Property Mapping:**
-- **Case-insensitive** - Match property names ignoring case
+### **Development Rules:**
+- **Never hardcode values** - Always use configuration variables
+- **Explicit configuration** - Use named properties instead of arrays for statuses
+- **Error on missing config** - Throw clear errors if required config is missing
+- **Case-insensitive matching** - Match property names ignoring case
 - **Type validation** - Ensure properties match expected types
-- **Graceful defaults** - Use config defaults when values missing
 
 ## 🔄 **Workflow Integration**
 
@@ -176,7 +153,6 @@ try {
 - **Keep syntax consistent** - Same `[variable]` notation across all files
 - **Real examples** - Concrete task IDs and values in examples
 - **Step numbering** - Clear sequential steps
-- **Marker notation** - Use `[+]` for AI-added content
 - **Organized structure** - All AI files in `workflows/` directory
 
 ### **CLI Natural Language:**
