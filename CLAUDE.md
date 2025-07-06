@@ -6,20 +6,17 @@ This file contains development guidelines for Claude Code when working on the `n
 
 ### **Always Update After Changes:**
 
-1. **README.md** - Keep documentation current
-3. **package.json** - Bump version following semver
-4. **Configuration examples** in all .md files
-5. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
+1. **README.md** - Keep documentation current with new features
+2. **package.json** - Bump version following semver
+3. **Configuration examples** in all .md files
+4. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
 
 ### **Version Update Checklist:**
 ```bash
 # 1. Update package.json version
 npm version patch|minor|major
 
-# 2. Update README.md configuration section
-# Find: **Add Configuration** (version 1.1.7):
-# Replace with new version number
-
+# 2. Update README.md with new features/options
 # 3. Update CLAUDE.md if project structure, practices, or guidelines changed
 # 4. Test configuration examples
 # 5. Commit changes with version tag
@@ -131,32 +128,7 @@ npx notion-ai-tasks list
 node -e "console.log(JSON.parse(require('fs').readFileSync('./notion-tasks.config.json')))"
 ```
 
-## 📐 **Status Management System**
-
-### **Status Flow:**
-```
-Not Started → In Progress → Test → Done
-     ↑            ↑          ↑      ↑
-defaultStatus  inProgressStatus  testStatus  completionStatus
-```
-
-### **Automatic Transitions:**
-- **0% progress** → `defaultStatus`
-- **1-99% progress** → `inProgressStatus`  
-- **100% progress** → `testStatus` (automatic)
-- **After validation** → `completionStatus` (manual only)
-
-### **Important Rules:**
-- **Never auto-complete to "Done"** - Only `testStatus` is automatic
-- **Always use config variables** - No hardcoded status strings
-- **Throw errors for missing config** - Don't fall back silently
-
 ## 🎨 **Notion Integration Guidelines**
-
-### **Content Structure:**
-- **Rich text format** - Use Notion's rich text structure
-- **Block types** - Support heading_2, paragraph, to_do, bulleted_list_item
-- **Todo management** - Support checking/unchecking todos in content
 
 ### **Error Handling:**
 ```javascript
@@ -168,10 +140,12 @@ try {
 }
 ```
 
-### **Property Mapping:**
-- **Case-insensitive** - Match property names ignoring case
+### **Development Rules:**
+- **Never hardcode values** - Always use configuration variables
+- **Explicit configuration** - Use named properties instead of arrays for statuses
+- **Error on missing config** - Throw clear errors if required config is missing
+- **Case-insensitive matching** - Match property names ignoring case
 - **Type validation** - Ensure properties match expected types
-- **Graceful defaults** - Use config defaults when values missing
 
 ## 🔄 **Workflow Integration**
 
@@ -179,7 +153,6 @@ try {
 - **Keep syntax consistent** - Same `[variable]` notation across all files
 - **Real examples** - Concrete task IDs and values in examples
 - **Step numbering** - Clear sequential steps
-- **Marker notation** - Use `[+]` for AI-added content
 - **Organized structure** - All AI files in `workflows/` directory
 
 ### **CLI Natural Language:**
@@ -202,18 +175,18 @@ try {
 ## 📋 **Maintenance Checklist**
 
 ### **Regular Updates:**
-- [ ] README.md version number matches package.json
-- [ ] All .md files use consistent configuration variable notation
-- [ ] Examples in documentation work with current code
-- [ ] Error messages are clear and actionable
-- [ ] Configuration template includes all required properties
-- [ ] CLAUDE.md reflects current project structure, practices, and guidelines
+- README.md version number matches package.json
+- All .md files use consistent configuration variable notation
+- Examples in documentation work with current code
+- Error messages are clear and actionable
+- Configuration template includes all required properties
+- CLAUDE.md reflects current project structure, practices, and guidelines
 
 ### **Before Release:**
-- [ ] Version bumped in package.json
-- [ ] README.md configuration section updated
-- [ ] README.md Project Structure section matches actual files
-- [ ] CLAUDE.md File Structure section matches actual files
-- [ ] All workflow .md files tested
-- [ ] No hardcoded values in code
-- [ ] All configuration options documented
+- Version bumped in package.json
+- README.md configuration section updated
+- README.md Project Structure section matches actual files
+- CLAUDE.md File Structure section matches actual files
+- All workflow .md files tested
+- No hardcoded values in code
+- All configuration options documented

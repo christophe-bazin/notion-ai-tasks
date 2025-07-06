@@ -79,6 +79,7 @@ The tool includes comprehensive AI workflow guides:
 
 ### CLI Commands
 
+#### Basic Commands
 ```bash
 # List all tasks
 notion-tasks list
@@ -87,22 +88,65 @@ notion-tasks list
 notion-tasks get <task-id-or-url>
 notion-tasks get "https://www.notion.so/...?p=2270fffd93c281b689c1c66099b13ef9"
 
-# Create new task
-notion-tasks create "Fix login bug" -t "Bug" -p "High"
-
-# Update task status
-notion-tasks update <task-id> -s "In Progress"
-
-# Add content to task
-notion-tasks add-content <task-id> -c "Setup database connection"
-
-# Update todo progress
-notion-tasks update-todo <task-id> "Setup database" -c true
-
 # Check progress
 notion-tasks progress <task-id>
+```
 
-# Natural language commands (AI assistants)
+#### Task Creation
+```bash
+# Create new task (basic)
+notion-tasks create "Fix login bug" -t "Bug" -p "High" -s "Not Started"
+
+# Create with description
+notion-tasks create "Fix login bug" -d "User cannot login due to authentication error" -t "Bug" -p "High"
+
+# Create with structured content (markdown)
+notion-tasks create "Fix login bug" -t "Bug" -p "High" -c "## Problem\nUser login fails\n\n## Steps\n- [ ] Investigate auth flow\n- [ ] Fix bug\n- [ ] Test fix"
+```
+
+**Create Command Options:**
+- `<title>` - Task title (required)
+- `-d, --description` - Brief description (converted to paragraph)
+- `-s, --status` - Task status
+- `-p, --priority` - Task priority  
+- `-t, --type` - Task type
+- `-c, --content` - Full markdown content (overrides description)
+
+#### Task Updates
+```bash
+# Update task properties
+notion-tasks update <task-id> -s "In Progress" -p "High"
+
+# Update checkbox properties
+notion-tasks update <task-id> -c "completed=true" -c "tested=false"
+
+# Add content to existing task
+notion-tasks update <task-id> --content "## Additional Notes\nNew requirements found\n\n- [ ] Extra validation needed"
+```
+
+**Update Command Options:**
+- `<id>` - Task ID (required)
+- `-s, --status` - New status
+- `-p, --priority` - New priority
+- `-t, --type` - New type
+- `-c, --checkbox` - Update checkbox (format: name=true/false)
+- `--content` - Add markdown content (**NOT** `-c`, which is for checkboxes)
+
+#### Content Management
+```bash
+# Add structured content blocks
+notion-tasks add-content <task-id> -c "Setup database connection"
+notion-tasks add-content <task-id> -h "New Section" -t "Description text"
+
+# Update individual todos
+notion-tasks update-todo <task-id> "Setup database" -c true
+
+# Update multiple todos at once
+notion-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true}]'
+```
+
+#### Natural Language Commands (AI assistants)
+```bash
 notion-tasks work on this feature https://www.notion.so/...
 notion-tasks create a task for implementing user authentication
 notion-tasks update the priority of task X to High
@@ -127,7 +171,15 @@ const newTask = await taskManager.createTask({
   title: 'My new task',
   status: 'In Progress',
   priority: 'High',
-  type: 'Feature'
+  type: 'Feature',
+  content: [
+    {
+      type: 'paragraph',
+      paragraph: {
+        rich_text: [{ type: 'text', text: { content: 'Task description' } }]
+      }
+    }
+  ]
 });
 
 // Update a task

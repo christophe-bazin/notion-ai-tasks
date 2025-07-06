@@ -103,6 +103,7 @@ program
   .option('-s, --status <status>', 'Task status')
   .option('-p, --priority <priority>', 'Task priority')
   .option('-t, --type <type>', 'Task type')
+  .option('-d, --description <description>', 'Task description')
   .option('-c, --content <content>', 'Task content (markdown format)')
   .action(async (title, options) => {
     try {
@@ -113,7 +114,18 @@ program
         type: options.type
       };
 
-      // Parse content if provided
+      // Handle description by converting to content
+      if (options.description) {
+        const descriptionContent = [{
+          type: 'paragraph',
+          paragraph: {
+            rich_text: [{ type: 'text', text: { content: options.description } }]
+          }
+        }];
+        taskData.content = descriptionContent;
+      }
+
+      // Parse content if provided (overrides description)
       if (options.content) {
         const content = parseMarkdownToBlocks(options.content);
         taskData.content = content;
@@ -133,6 +145,7 @@ program
   .option('-p, --priority <priority>', 'New priority')
   .option('-t, --type <type>', 'New type')
   .option('-c, --checkbox <name=value>', 'Update checkbox (format: name=true/false)', collect, [])
+  .option('--content <content>', 'Add content to task (markdown format)')
   .action(async (id, options) => {
     try {
       const updates = {};
@@ -152,6 +165,13 @@ program
       
       await taskManager.updateTask(id, updates);
       console.log('✅ Task updated successfully');
+      
+      // Add content if provided
+      if (options.content) {
+        const content = parseMarkdownToBlocks(options.content);
+        await taskManager.addContentToTask(id, content);
+        console.log('✅ Content added successfully');
+      }
     } catch (error) {
       console.error('❌ Error updating task:', error.message);
     }
