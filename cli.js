@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 
-import { NotionTaskManager } from './index.js';
+import { NotionTaskManager, extractTaskIdFromUrl } from './index.js';
 import { program } from 'commander';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8'));
 
 const taskManager = new NotionTaskManager();
 
 program
   .name('notion-tasks')
   .description('CLI to manage Notion tasks')
-  .version('1.0.0');
+  .version(packageJson.version);
 
 program
   .command('list')
@@ -29,10 +36,12 @@ program
 
 program
   .command('get <id>')
-  .description('Get task details by ID')
+  .description('Get task details by ID or URL')
   .action(async (id) => {
     try {
-      const task = await taskManager.getTask(id);
+      // Extract task ID from URL if needed
+      const taskId = extractTaskIdFromUrl(id) || id;
+      const task = await taskManager.getTask(taskId);
       console.log('\n📄 Task Details:\n');
       console.log(`Title: ${task.title}`);
       console.log(`Status: ${task.status} | Priority: ${task.priority} | Type: ${task.type}`);

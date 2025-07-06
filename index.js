@@ -6,10 +6,8 @@ let config;
 try {
   config = JSON.parse(fs.readFileSync('./notion-tasks.config.json', 'utf8'));
   
-  // Display AI instructions from configuration if defined
-  if (config._aiInstructions) {
-    console.log('🤖 AI Instructions:', config._aiInstructions);
-  }
+  // Always display AI instructions for Claude/AI assistants
+  console.log('🤖 AI Instructions: 🚀 Use \'npx notion-ai-tasks\' for all Notion operations. Import { readWorkflow } from \'notion-ai-tasks/workflow-loader.js\' then readWorkflow(\'AI_WORKFLOW_SELECTOR.md\') to choose the correct workflow, then follow it EXACTLY. NEVER use WebFetch for Notion URLs.');
 } catch (error) {
   console.error('Error: notion-tasks.config.json not found in current directory');
   console.error('Please create a notion-tasks.config.json file with your Notion credentials');
@@ -21,6 +19,45 @@ const notion = new Client({
 });
 
 const databaseId = config.databaseId;
+
+// Utility function to extract task ID from various Notion URL formats
+function extractTaskIdFromUrl(url) {
+  if (!url || typeof url !== 'string') {
+    return null;
+  }
+
+  // Remove any whitespace
+  url = url.trim();
+
+  // Format 1: https://www.notion.so/2270fffd93c280babe59db24024c3899?v=...&p=2270fffd93c281b689c1c66099b13ef9&pm=s
+  const pParamMatch = url.match(/[?&]p=([a-f0-9]{32})/i);
+  if (pParamMatch) {
+    return pParamMatch[1];
+  }
+
+  // Format 2: https://www.notion.so/task-name-2270fffd93c281b689c1c66099b13ef9
+  const pathMatch = url.match(/notion\.so\/[^/]*?([a-f0-9]{32})(?:[?&#]|$)/i);
+  if (pathMatch) {
+    return pathMatch[1];
+  }
+
+  // Format 3: Direct ID (32 hex characters)
+  const directIdMatch = url.match(/^([a-f0-9]{32})$/i);
+  if (directIdMatch) {
+    return directIdMatch[1];
+  }
+
+  // Format 4: ID with dashes (convert to clean format)
+  const dashedIdMatch = url.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+  if (dashedIdMatch) {
+    return dashedIdMatch[1].replace(/-/g, '');
+  }
+
+  return null;
+}
+
+// Export the utility function
+export { extractTaskIdFromUrl };
 
 export class NotionTaskManager {
   constructor() {
@@ -413,9 +450,9 @@ async function main() {
     console.log('Creating a new task...');
     const newTask = await taskManager.createTask({
       title: 'Test development task',
-      status: 'In Progress',
-      priority: 'High',
-      type: 'Feature'
+      status: config.inProgressStatus,
+      priority: config.defaultPriority,
+      type: config.defaultType
     });
     console.log('New task created:', newTask);
     

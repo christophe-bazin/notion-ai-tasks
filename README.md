@@ -7,6 +7,8 @@ Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to sea
 ## 🎯 Key Features
 
 - **AI-First Design**: Built specifically for AI assistant workflows
+- **Natural Language Commands**: AI can parse commands like "work on this feature URL" or "create a task for X"
+- **URL Recognition**: Automatically extracts task IDs from Notion URLs (including `p=` parameter format)
 - **Automated Status Management**: Tasks automatically progress from "Not Started" → "In Progress" → "Test" → "Done"
 - **Progress Tracking**: Todo completion automatically updates task status
 - **Structured Templates**: Pre-defined task structures for bugs, features, documentation, and refactoring
@@ -62,8 +64,7 @@ npm install -g notion-ai-tasks
      "defaultStatus": "Not Started",
      "inProgressStatus": "In Progress",
      "testStatus": "Test",
-     "completionStatus": "Done",
-     "_aiInstructions": "🚀 Use 'npx notion-ai-tasks' for all Notion operations. Find npm global modules with 'npm root -g', then read $(npm root -g)/notion-ai-tasks/AI_WORKFLOW_SELECTOR.md to choose the correct workflow, then follow it EXACTLY. NEVER use WebFetch for Notion URLs."
+     "completionStatus": "Done"
    }
    ```
 
@@ -72,9 +73,9 @@ npm install -g notion-ai-tasks
 ### For AI Assistants
 
 The tool includes comprehensive AI workflow guides:
-- **AI_TASK_EXECUTION.md** - Step-by-step execution workflow
-- **AI_TASK_CREATION.md** - Task creation templates and guidelines  
-- **AI_TASK_UPDATE.md** - Task update and progress management
+- **workflows/AI_TASK_EXECUTION.md** - Step-by-step execution workflow
+- **workflows/AI_TASK_CREATION.md** - Task creation templates and guidelines  
+- **workflows/AI_TASK_UPDATE.md** - Task update and progress management
 
 ### CLI Commands
 
@@ -82,8 +83,9 @@ The tool includes comprehensive AI workflow guides:
 # List all tasks
 notion-tasks list
 
-# Get task details
-notion-tasks get <task-id>
+# Get task details (accepts URLs or task IDs)
+notion-tasks get <task-id-or-url>
+notion-tasks get "https://www.notion.so/...?p=2270fffd93c281b689c1c66099b13ef9"
 
 # Create new task
 notion-tasks create "Fix login bug" -t "Bug" -p "High"
@@ -99,14 +101,23 @@ notion-tasks update-todo <task-id> "Setup database" -c true
 
 # Check progress
 notion-tasks progress <task-id>
+
+# Natural language commands (AI assistants)
+notion-tasks work on this feature https://www.notion.so/...
+notion-tasks create a task for implementing user authentication
+notion-tasks update the priority of task X to High
 ```
 
 ### API Usage
 
 ```javascript
-import { NotionTaskManager } from 'notion-ai-tasks';
+import { NotionTaskManager, extractTaskIdFromUrl } from 'notion-ai-tasks';
 
 const taskManager = new NotionTaskManager();
+
+// Extract task ID from Notion URL
+const notionUrl = "https://www.notion.so/...?p=2270fffd93c281b689c1c66099b13ef9";
+const taskId = extractTaskIdFromUrl(notionUrl);
 
 // Get all tasks
 const tasks = await taskManager.getTasks();
@@ -157,6 +168,7 @@ await taskManager.updateTodoInContent(taskId, 'Complete this task', true);
 - `getTaskProgress(taskId)` - Gets completion percentage
 - `markTaskProgress(taskId, steps)` - Mark multiple steps complete
 - `updateTaskStatusBasedOnProgress(taskId)` - Auto-update status based on progress
+- `extractTaskIdFromUrl(url)` - Extract task ID from various Notion URL formats
 
 ## 📁 Project Structure
 
@@ -164,25 +176,38 @@ await taskManager.updateTodoInContent(taskId, 'Complete this task', true);
 notion-ai-tasks/
 ├── index.js                    # Core NotionTaskManager class
 ├── cli.js                      # Command-line interface
-├── notion-tasks.config.json    # Project configuration
-├── AI_TASK_EXECUTION.md        # AI execution workflow
-├── AI_TASK_CREATION.md         # AI task creation guide
-├── AI_TASK_UPDATE.md           # AI task update guide
-└── AI_WORKFLOW_SELECTOR.md     # AI workflow selector
+├── workflow-loader.js          # Workflow file loader utility
+├── notion-tasks.config.json    # Project configuration template
+├── workflows/                  # AI workflow guides
+│   ├── AI_WORKFLOW_SELECTOR.md # AI workflow selector
+│   ├── AI_TASK_EXECUTION.md    # AI execution workflow
+│   ├── AI_TASK_CREATION.md     # AI task creation guide
+│   └── AI_TASK_UPDATE.md       # AI task update guide
+├── README.md                   # Main documentation
+└── CLAUDE.md                   # Development guidelines
 ```
 
 ## 🤖 AI Compatibility
 
-- **Claude Code**: Full integration with command execution
+- **Claude Code**: Full integration with command execution and natural language parsing
 - **GitHub Copilot**: Can generate correct commands (manual execution)
 - **Other AI tools**: Compatible with workflow guidelines (manual execution)
+
+### Natural Language Examples:
+```bash
+# AI assistants can interpret these commands
+"Work on this feature: https://www.notion.so/...?p=abc123"
+"Create a task for implementing user authentication"
+"Update the priority of task X to High"
+"Mark the database setup todo as complete"
+```
 
 ## 📝 Configuration Options
 
 All configuration is done via `notion-tasks.config.json`:
 - **Status Flow**: Configure the 4-stage status progression
 - **Custom Values**: Set your own priorities, types, and defaults
-- **AI Instructions**: Critical AI guidance via `_aiInstructions` (directs AI to use correct workflows)
+- **AI Integration**: Uses `workflow-loader.js` to automatically find AI workflow guides
 
 ## 🔧 Development
 
