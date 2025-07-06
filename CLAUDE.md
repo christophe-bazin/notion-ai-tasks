@@ -6,20 +6,17 @@ This file contains development guidelines for Claude Code when working on the `n
 
 ### **Always Update After Changes:**
 
-1. **README.md** - Keep documentation current
-3. **package.json** - Bump version following semver
-4. **Configuration examples** in all .md files
-5. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
+1. **README.md** - Keep documentation current with new features
+2. **package.json** - Bump version following semver
+3. **Configuration examples** in all .md files
+4. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
 
 ### **Version Update Checklist:**
 ```bash
 # 1. Update package.json version
 npm version patch|minor|major
 
-# 2. Update README.md configuration section
-# Find: **Add Configuration** (version 1.1.7):
-# Replace with new version number
-
+# 2. Update README.md with new features/options
 # 3. Update CLAUDE.md if project structure, practices, or guidelines changed
 # 4. Test configuration examples
 # 5. Commit changes with version tag
@@ -202,18 +199,18 @@ try {
 ## 📋 **Maintenance Checklist**
 
 ### **Regular Updates:**
-- [ ] README.md version number matches package.json
-- [ ] All .md files use consistent configuration variable notation
-- [ ] Examples in documentation work with current code
-- [ ] Error messages are clear and actionable
-- [ ] Configuration template includes all required properties
-- [ ] CLAUDE.md reflects current project structure, practices, and guidelines
+- README.md version number matches package.json
+- All .md files use consistent configuration variable notation
+- Examples in documentation work with current code
+- Error messages are clear and actionable
+- Configuration template includes all required properties
+- CLAUDE.md reflects current project structure, practices, and guidelines
 
 ### **Before Release:**
-- [ ] Version bumped in package.json
-- [ ] README.md configuration section updated
-- [ ] README.md Project Structure section matches actual files
-- [ ] CLAUDE.md File Structure section matches actual files
-- [ ] All workflow .md files tested
-- [ ] No hardcoded values in code
-- [ ] All configuration options documented
+- Version bumped in package.json
+- README.md configuration section updated
+- README.md Project Structure section matches actual files
+- CLAUDE.md File Structure section matches actual files
+- All workflow .md files tested
+- No hardcoded values in code
+- All configuration options documented
