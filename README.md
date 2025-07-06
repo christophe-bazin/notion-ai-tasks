@@ -21,6 +21,10 @@ Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to sea
 4. **System automatically moves task to "Test"** when all todos are done
 5. **Human manually marks as "Done"** after validation
 
+## 🎬 Demo
+
+![Work on Task Demo](https://github.com/user/notion-ai-tasks/raw/main/demo/work-on-task.mp4)
+
 ## 🚀 Quick Start
 
 ### Installation
