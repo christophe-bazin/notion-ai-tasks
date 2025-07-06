@@ -211,10 +211,28 @@ export class NotionTaskManager {
 
   async addContentToTask(taskId, content) {
     try {
-      await this.notion.blocks.children.append({
-        block_id: taskId,
-        children: content
+      // Separate blocks with children from blocks without children
+      const blocksWithoutChildren = content.map(block => {
+        const { children, ...blockWithoutChildren } = block;
+        return blockWithoutChildren;
       });
+      
+      // Add parent blocks first
+      const response = await this.notion.blocks.children.append({
+        block_id: taskId,
+        children: blocksWithoutChildren
+      });
+      
+      // Add children blocks recursively
+      for (let i = 0; i < content.length; i++) {
+        const originalBlock = content[i];
+        const createdBlock = response.results[i];
+        
+        if (originalBlock.children && originalBlock.children.length > 0) {
+          await this.addContentToTask(createdBlock.id, originalBlock.children);
+        }
+      }
+      
       return { success: true };
     } catch (error) {
       console.error('Error adding content to task:', error);
@@ -247,11 +265,11 @@ export class NotionTaskManager {
         }
       });
 
-      // Retrieve all content blocks from task
+      // Retrieve all content blocks from task (including nested blocks)
       const contentResponse = await this.notion.blocks.children.list({
         block_id: taskId
       });
-      taskData.content = contentResponse.results;
+      taskData.content = await this.getAllBlocksRecursively(contentResponse.results);
 
       return taskData;
     } catch (error) {
@@ -265,11 +283,33 @@ export class NotionTaskManager {
       const response = await this.notion.blocks.children.list({
         block_id: taskId
       });
-      return response.results;
+      return await this.getAllBlocksRecursively(response.results);
     } catch (error) {
       console.error('Error getting task content:', error);
       throw error;
     }
+  }
+
+  async getAllBlocksRecursively(blocks) {
+    const allBlocks = [];
+    
+    for (const block of blocks) {
+      allBlocks.push(block);
+      
+      if (block.has_children) {
+        try {
+          const childrenResponse = await this.notion.blocks.children.list({
+            block_id: block.id
+          });
+          const childBlocks = await this.getAllBlocksRecursively(childrenResponse.results);
+          allBlocks.push(...childBlocks);
+        } catch (error) {
+          console.error(`Error getting children for block ${block.id}:`, error);
+        }
+      }
+    }
+    
+    return allBlocks;
   }
 
   async updateTodoInContent(taskId, todoText, checked) {
