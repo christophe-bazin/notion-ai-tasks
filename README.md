@@ -57,6 +57,7 @@ npm install -g notion-ai-tasks
    {
      "notionToken": "your_notion_integration_token_here",
      "databaseId": "your_notion_database_id_here",
+     "statuses": ["Not Started", "In Progress", "Test", "Done"],
      "priorities": ["Low", "Medium", "High"],
      "types": ["Bug", "Feature", "Task", "Documentation", "Refactoring"],
      "defaultPriority": "Medium",
