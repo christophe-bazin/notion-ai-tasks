@@ -13,6 +13,7 @@ import { updateCommand } from './commands/update.js';
 import { todoCommand } from './commands/todo.js';
 import { naturalCommand } from './commands/natural.js';
 import { hierarchicalCommand } from './commands/hierarchical.js';
+import { addContentCommand } from './commands/addContent.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -81,6 +82,16 @@ program
   .option('-p, --progressive', 'Generate progressive todo steps')
   .action(async (taskId, options) => {
     await hierarchicalCommand(taskId, options);
+  });
+
+program
+  .command('add-content <taskId>')
+  .description('Add content to an existing task')
+  .option('-c, --content <content>', 'Content to add (markdown format)')
+  .option('-t, --text <text>', 'Text content to add')
+  .action(async (taskId, options) => {
+    const taskManager = new TaskManager();
+    await addContentCommand(taskManager, taskId, options);
   });
 
 program
