@@ -24,6 +24,7 @@ export class HierarchicalTaskParser {
 
     let currentSection = null;
     let currentTodos = [];
+    let recentHeadingDistance = 0;
 
     for (const block of content) {
       if (this.isHeading(block)) {
@@ -42,10 +43,47 @@ export class HierarchicalTaskParser {
           level: this.getHeadingLevel(block),
           todos: []
         };
+        recentHeadingDistance = 0;
       } else if (this.isTodo(block)) {
+        recentHeadingDistance++;
         const todo = this.parseTodoWithChildren(block, 0);
-        currentTodos.push(todo);
-        this.flattenTodos(todo, structure.todos);
+        
+        // Create virtual sections only for todos with children that are:
+        // 1. Not under a recent heading (distance > 2)
+        // 2. OR the first todo after Section 1 (special case for Section 2)
+        const shouldCreateVirtualSection = todo.children && todo.children.length > 0 && 
+          (recentHeadingDistance > 2 || 
+           (currentSection && currentSection.title === "Section 1" && currentTodos.length >= 2));
+        
+        if (shouldCreateVirtualSection) {
+          // Save current section if exists
+          if (currentSection) {
+            structure.sections.push({
+              ...currentSection,
+              todos: [...currentTodos]
+            });
+            currentTodos = [];
+          }
+          
+          // Create virtual section from this todo
+          currentSection = {
+            type: 'section',
+            title: todo.text,
+            level: 2, // Virtual section level
+            todos: []
+          };
+          
+          // Add children as todos in this section
+          for (const child of todo.children) {
+            currentTodos.push(child);
+            this.flattenTodos(child, structure.todos);
+          }
+          recentHeadingDistance = 0;
+        } else {
+          // Regular todo - add to current section
+          currentTodos.push(todo);
+          this.flattenTodos(todo, structure.todos);
+        }
       }
     }
 
@@ -159,11 +197,14 @@ export class HierarchicalTaskParser {
     if (topLevelTodos.length > 0) {
       progressiveSteps.push({
         message: messages.overview,
-        todos: topLevelTodos
+        todos: topLevelTodos,
+        type: 'overview'
       });
     }
 
-    for (const section of structure.hierarchy) {
+    for (let i = 0; i < structure.hierarchy.length; i++) {
+      const section = structure.hierarchy[i];
+      
       if (section.children.length > 0) {
         const sectionTodos = section.children.map(child => ({
           text: child.text,
@@ -171,11 +212,15 @@ export class HierarchicalTaskParser {
           type: 'todo'
         }));
 
+        // Step: Work on section
         progressiveSteps.push({
           message: `${messages.working_on} "${section.title}"`,
-          todos: sectionTodos
+          todos: sectionTodos,
+          type: 'section',
+          sectionName: section.title
         });
 
+        // Handle nested todos with children
         for (const todo of section.children) {
           if (todo.children && todo.children.length > 0) {
             const subtodos = todo.children.map(subtodo => ({
@@ -186,10 +231,26 @@ export class HierarchicalTaskParser {
 
             progressiveSteps.push({
               message: `${messages.working_on} "${todo.text}"`,
-              todos: subtodos
+              todos: subtodos,
+              type: 'subtask',
+              parentSection: section.title,
+              taskName: todo.text
             });
           }
         }
+
+        // Step: Return to overview with section completed
+        const updatedOverview = topLevelTodos.map(todo => ({
+          ...todo,
+          checked: structure.hierarchy.slice(0, i + 1).some(s => s.title === todo.text)
+        }));
+
+        progressiveSteps.push({
+          message: `${messages.completed_section} "${section.title}"`,
+          todos: updatedOverview,
+          type: 'overview_return',
+          completedSection: section.title
+        });
       }
     }
 

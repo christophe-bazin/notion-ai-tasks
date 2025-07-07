@@ -28,7 +28,7 @@ npx notion-ai-tasks update <task-id> --status [inProgressStatus]
 ```
 
 ### Step 3: Analyze Task Structure & Organize Your Work
-For complex Notion tasks, first analyze the hierarchical structure and organize your work using Claude's TodoWrite tool:
+For complex Notion tasks, first analyze the hierarchical structure and follow progressive decomposition:
 
 #### Check for Hierarchical Structure:
 ```bash
@@ -41,36 +41,80 @@ If the task has nested sections or todos, use progressive decomposition:
 npx notion-ai-tasks hierarchical <task-id> --progressive
 ```
 
-This will generate step-by-step todos organized by hierarchy. Follow the generated steps:
+**CRITICAL: Follow the generated progressive steps EXACTLY. Do NOT mix levels.**
+
+**Progressive Execution Workflow:**
+1. **Get the progressive steps** from the hierarchical command
+2. **Execute each step individually** following the exact todo list provided
+3. **Update Claude todos to match ONLY the current step** - don't mix with other levels
+4. **Complete current step fully** before moving to next step
 
 **Example Progressive Execution:**
 ```javascript
-// Step 1: Overview of all main sections
+// Generated Step 1: Overview
+"Here are all the tasks to do"
+Update todo
+- [ ] Section 1
+- [ ] Section 2  
+- [ ] Section 3
+
+// Claude todos for Step 1 ONLY:
 TodoWrite([
-  {id: "1", content: "Database Setup", status: "pending"},
-  {id: "2", content: "API Implementation", status: "pending"},
-  {id: "3", content: "Testing", status: "pending"}
+  {id: "1", content: "Section 1", status: "pending"},
+  {id: "2", content: "Section 2", status: "pending"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 
-// Step 2: Work on "Database Setup" section
+// Generated Step 2: Focus on Section 1
+"Working on Section 1"
+Update todo
+- [ ] Task 1.1
+- [ ] Task 1.2
+
+// Claude todos for Step 2 ONLY:
 TodoWrite([
-  {id: "1", content: "Database Setup", status: "in_progress"},
-  {id: "2", content: "API Implementation", status: "pending"},
-  {id: "3", content: "Testing", status: "pending"}
+  {id: "1", content: "Task 1.1", status: "in_progress"},
+  {id: "2", content: "Task 1.2", status: "pending"}
 ]);
 
-// Step 3: Drill down to sub-tasks in "Database Setup"
+// Generated Step 3: Section 1 completed - return to overview
+"Section completed Section 1"
+Update todo
+- [x] Section 1  ✅
+- [ ] Section 2
+- [ ] Section 3
+
+// Claude todos for Step 3 - overview with progress:
 TodoWrite([
-  {id: "1", content: "Database Setup", status: "in_progress"},
-  {id: "1a", content: "Create schema", status: "in_progress"},
-  {id: "1b", content: "Add migrations", status: "pending"}
+  {id: "1", content: "Section 1", status: "completed"},
+  {id: "2", content: "Section 2", status: "pending"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 
-// Step 4: Complete sub-tasks and move to next
+// Generated Step 4: Focus on Section 2
+"Working on Section 2"  
+Update todo
+- [ ] Task 2.1
+- [ ] Task 2.2
+
+// Claude todos for Step 4 ONLY:
 TodoWrite([
-  {id: "1", content: "Database Setup", status: "completed"},
-  {id: "2", content: "API Implementation", status: "in_progress"},
-  {id: "3", content: "Testing", status: "pending"}
+  {id: "1", content: "Task 2.1", status: "in_progress"},
+  {id: "2", content: "Task 2.2", status: "pending"}
+]);
+
+// Generated Step 5: Section 2 completed - return to overview
+"Section completed Section 2"
+Update todo
+- [x] Section 1  ✅
+- [x] Section 2  ✅
+- [ ] Section 3
+
+// Claude todos for Step 5 - overview with progress:
+TodoWrite([
+  {id: "1", content: "Section 1", status: "completed"},
+  {id: "2", content: "Section 2", status: "completed"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 ```
 
@@ -85,11 +129,13 @@ TodoWrite([
 ```
 
 **Key Principles:**
-- **Use hierarchical analysis** for complex tasks
-- **Work sequentially** through sections/levels  
-- **Add todos progressively** as you drill down
-- **Keep completed context** in your todo list
-- **Respect dependencies** (parent before child)
+- **Generate progressive steps first** using hierarchical command
+- **Follow generated steps exactly** - each step provides the complete todo list for that level
+- **Match Claude todos to current step only** - don't carry forward other sections/levels
+- **Return to overview after each section** - the system generates overview return steps automatically
+- **Update section status progressively** - mark sections as completed when returning to overview
+- **Complete current step fully** before advancing to next step
+- **Never mix hierarchical levels** in Claude todos
 
 ### Step 4: Update Notion Todos IMMEDIATELY After Completion
 ```bash
