@@ -24,10 +24,10 @@ export class HierarchicalTaskParser {
 
     let currentSection = null;
     let currentTodos = [];
-    let indentLevel = 0;
 
     for (const block of content) {
       if (this.isHeading(block)) {
+        // Save previous section
         if (currentSection) {
           structure.sections.push({
             ...currentSection,
@@ -43,22 +43,13 @@ export class HierarchicalTaskParser {
           todos: []
         };
       } else if (this.isTodo(block)) {
-        const todoText = this.extractText(block);
-        const checked = this.isChecked(block);
-        const indent = this.getIndentLevel(todoText);
-        
-        const todo = {
-          text: todoText.trim(),
-          checked,
-          indent,
-          isSubtask: indent > 0
-        };
-
+        const todo = this.parseTodoWithChildren(block, 0);
         currentTodos.push(todo);
-        structure.todos.push(todo);
+        this.flattenTodos(todo, structure.todos);
       }
     }
 
+    // Handle remaining section or create default section
     if (currentSection) {
       structure.sections.push({
         ...currentSection,
@@ -77,6 +68,43 @@ export class HierarchicalTaskParser {
     return structure;
   }
 
+  parseTodoWithChildren(block, indentLevel) {
+    const todo = {
+      text: this.extractText(block).trim(),
+      checked: this.isChecked(block),
+      indent: indentLevel,
+      isSubtask: indentLevel > 0,
+      children: []
+    };
+
+    // Parse children if they exist
+    if (block.children && Array.isArray(block.children)) {
+      for (const child of block.children) {
+        if (this.isTodo(child)) {
+          const childTodo = this.parseTodoWithChildren(child, indentLevel + 1);
+          todo.children.push(childTodo);
+        }
+      }
+    }
+
+    return todo;
+  }
+
+  flattenTodos(todo, flatList) {
+    flatList.push({
+      text: todo.text,
+      checked: todo.checked,
+      indent: todo.indent,
+      isSubtask: todo.isSubtask
+    });
+    
+    if (todo.children) {
+      for (const child of todo.children) {
+        this.flattenTodos(child, flatList);
+      }
+    }
+  }
+
   buildHierarchy(structure) {
     const hierarchy = [];
     
@@ -88,32 +116,34 @@ export class HierarchicalTaskParser {
         children: []
       };
 
-      let currentParent = null;
-      
       for (const todo of section.todos) {
-        if (todo.indent === 0) {
-          const todoNode = {
-            type: 'todo',
-            text: todo.text,
-            checked: todo.checked,
-            children: []
-          };
-          hierarchyNode.children.push(todoNode);
-          currentParent = todoNode;
-        } else if (currentParent) {
-          currentParent.children.push({
-            type: 'subtodo',
-            text: todo.text,
-            checked: todo.checked,
-            indent: todo.indent
-          });
-        }
+        const todoNode = this.buildTodoNode(todo);
+        hierarchyNode.children.push(todoNode);
       }
       
       hierarchy.push(hierarchyNode);
     }
 
     return hierarchy;
+  }
+
+  buildTodoNode(todo) {
+    const todoNode = {
+      type: 'todo',
+      text: todo.text,
+      checked: todo.checked,
+      children: []
+    };
+
+    if (todo.children && Array.isArray(todo.children)) {
+      for (const child of todo.children) {
+        const childNode = this.buildTodoNode(child);
+        childNode.type = 'subtodo';
+        todoNode.children.push(childNode);
+      }
+    }
+
+    return todoNode;
   }
 
   generateProgressiveTodos(structure) {

@@ -9,7 +9,7 @@ export async function hierarchicalCommand(taskIdOrUrl, options) {
     
     if (options.structure) {
       const structure = await taskManager.getHierarchicalStructure(taskId);
-      console.log('📋 Structure hiérarchique:');
+      console.log('📋 Hierarchical structure:');
       console.log(JSON.stringify(structure, null, 2));
       return;
     }
