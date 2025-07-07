@@ -12,6 +12,7 @@ import { createCommand } from './commands/create.js';
 import { updateCommand } from './commands/update.js';
 import { todoCommand } from './commands/todo.js';
 import { naturalCommand } from './commands/natural.js';
+import { hierarchicalCommand } from './commands/hierarchical.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -71,6 +72,16 @@ program
     taskManager = taskManager || new TaskManager();
     const isChecked = checked === 'true' || checked === '1';
     await todoCommand(taskManager, taskId, todoText, isChecked);
+  });
+
+program
+  .command('hierarchical <taskId>')
+  .description('Analyze and manage hierarchical task structure')
+  .option('-s, --structure', 'Show hierarchical structure')
+  .option('-p, --progressive', 'Generate progressive todo steps')
+  .option('-l, --language <language>', 'Language for messages (fr/en)', 'fr')
+  .action(async (taskId, options) => {
+    await hierarchicalCommand(taskId, options);
   });
 
 program

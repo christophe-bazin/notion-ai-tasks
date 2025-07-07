@@ -1,11 +1,13 @@
 import NotionClient from './NotionClient.js';
 import { ContentManager } from './ContentManager.js';
 import { parseMarkdownToNotionBlocks } from '../utils/markdownParser.js';
+import { HierarchicalTaskParser } from '../utils/hierarchicalTaskParser.js';
 
 export class TaskManager {
   constructor() {
     this.notionClient = new NotionClient();
     this.contentManager = new ContentManager(this.notionClient);
+    this.hierarchicalParser = new HierarchicalTaskParser();
     this.notion = this.notionClient.getClient();
     this.databaseId = this.notionClient.getDatabaseId();
     this.config = this.notionClient.getConfig();
@@ -212,5 +214,29 @@ export class TaskManager {
 
   async updateTodoInContent(taskId, todoText, checked) {
     return await this.contentManager.updateTodoInContent(taskId, todoText, checked);
+  }
+
+  async getHierarchicalStructure(taskId) {
+    try {
+      const content = await this.contentManager.getTaskContent(taskId);
+      return this.hierarchicalParser.parseHierarchicalContent(content);
+    } catch (error) {
+      console.error('Error getting hierarchical structure:', error);
+      throw error;
+    }
+  }
+
+  async generateProgressiveTodos(taskId, language = 'fr') {
+    try {
+      const structure = await this.getHierarchicalStructure(taskId);
+      return this.hierarchicalParser.generateProgressiveTodos(structure, language);
+    } catch (error) {
+      console.error('Error generating progressive todos:', error);
+      throw error;
+    }
+  }
+
+  generateContextualMessage(currentStep, completedTasks, language = 'fr') {
+    return this.hierarchicalParser.generateContextualMessage(currentStep, completedTasks, language);
   }
 }
