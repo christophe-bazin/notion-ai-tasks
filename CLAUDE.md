@@ -122,6 +122,7 @@ notion-ai-tasks/
 │   ├── utils/                  # Utility functions
 │   │   ├── urlParser.js        # URL/ID extraction
 │   │   ├── displayHelpers.js   # CLI display functions
+│   │   ├── markdownParser.js   # Markdown parsing utilities
 │   │   └── nlpParser.js        # Natural language parsing
 │   └── cli/                    # CLI commands
 │       ├── index.js            # CLI setup & routing
