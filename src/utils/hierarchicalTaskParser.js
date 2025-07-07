@@ -3,20 +3,11 @@ export class HierarchicalTaskParser {
     this.currentLevel = 0;
     this.taskStack = [];
     this.contextualMessages = {
-      fr: {
-        overview: "Voici toutes les tâches à faire",
-        working_on: "Travaillons sur",
-        progress_update: "Mise à jour de l'avancement",
-        next_section: "Passons maintenant à",
-        completed_section: "Section terminée"
-      },
-      en: {
-        overview: "Here are all the tasks to do",
-        working_on: "Working on",
-        progress_update: "Progress update",
-        next_section: "Moving on to",
-        completed_section: "Section completed"
-      }
+      overview: "Here are all the tasks to do",
+      working_on: "Working on",
+      progress_update: "Progress update",
+      next_section: "Moving on to",
+      completed_section: "Section completed"
     };
   }
 
@@ -76,7 +67,7 @@ export class HierarchicalTaskParser {
     } else if (currentTodos.length > 0) {
       structure.sections.push({
         type: 'section',
-        title: 'Tâches principales',
+        title: 'Main Tasks',
         level: 1,
         todos: [...currentTodos]
       });
@@ -125,8 +116,8 @@ export class HierarchicalTaskParser {
     return hierarchy;
   }
 
-  generateProgressiveTodos(structure, language = 'fr') {
-    const messages = this.contextualMessages[language];
+  generateProgressiveTodos(structure) {
+    const messages = this.contextualMessages;
     const progressiveSteps = [];
 
     const topLevelTodos = structure.hierarchy.map(section => ({
@@ -175,8 +166,8 @@ export class HierarchicalTaskParser {
     return progressiveSteps;
   }
 
-  generateContextualMessage(currentStep, completedTasks, language = 'fr') {
-    const messages = this.contextualMessages[language];
+  generateContextualMessage(currentStep, completedTasks) {
+    const messages = this.contextualMessages;
     const completedCount = completedTasks.filter(t => t.checked).length;
     const totalCount = completedTasks.length;
     

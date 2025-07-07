@@ -196,6 +196,15 @@ export class TaskManager {
       });
 
       taskData.content = await this.contentManager.getTaskContent(taskId);
+      
+      try {
+        taskData.hierarchicalStructure = await this.getHierarchicalStructure(taskId);
+        taskData.progressiveSteps = await this.generateProgressiveTodos(taskId);
+      } catch (error) {
+        console.warn('Could not analyze hierarchical structure:', error.message);
+        taskData.hierarchicalStructure = null;
+        taskData.progressiveSteps = null;
+      }
 
       return taskData;
     } catch (error) {
@@ -226,17 +235,17 @@ export class TaskManager {
     }
   }
 
-  async generateProgressiveTodos(taskId, language = 'fr') {
+  async generateProgressiveTodos(taskId) {
     try {
       const structure = await this.getHierarchicalStructure(taskId);
-      return this.hierarchicalParser.generateProgressiveTodos(structure, language);
+      return this.hierarchicalParser.generateProgressiveTodos(structure);
     } catch (error) {
       console.error('Error generating progressive todos:', error);
       throw error;
     }
   }
 
-  generateContextualMessage(currentStep, completedTasks, language = 'fr') {
-    return this.hierarchicalParser.generateContextualMessage(currentStep, completedTasks, language);
+  generateContextualMessage(currentStep, completedTasks) {
+    return this.hierarchicalParser.generateContextualMessage(currentStep, completedTasks);
   }
 }

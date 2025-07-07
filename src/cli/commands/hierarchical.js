@@ -15,10 +15,9 @@ export async function hierarchicalCommand(taskIdOrUrl, options) {
     }
     
     if (options.progressive) {
-      const language = options.language || 'fr';
-      const progressiveSteps = await taskManager.generateProgressiveTodos(taskId, language);
+      const progressiveSteps = await taskManager.generateProgressiveTodos(taskId);
       
-      console.log('🎯 Étapes progressives:');
+      console.log('🎯 Progressive steps:');
       progressiveSteps.forEach((step, index) => {
         console.log(`\n${index + 1}. ${step.message}`);
         console.log('Update todo');
@@ -33,26 +32,26 @@ export async function hierarchicalCommand(taskIdOrUrl, options) {
     const task = await taskManager.getTask(taskId);
     const structure = await taskManager.getHierarchicalStructure(taskId);
     
-    displayInfo('📋 Tâche: ' + task.title);
-    displayInfo('🔄 Structure hiérarchique détectée');
+    displayInfo('📋 Task: ' + task.title);
+    displayInfo('🔄 Hierarchical structure detected');
     
-    console.log('\n📊 Résumé:');
+    console.log('\n📊 Summary:');
     console.log(`- ${structure.sections.length} section(s)`);
-    console.log(`- ${structure.todos.length} tâche(s) au total`);
-    console.log(`- ${structure.todos.filter(t => t.checked).length} tâche(s) terminée(s)`);
+    console.log(`- ${structure.todos.length} task(s) total`);
+    console.log(`- ${structure.todos.filter(t => t.checked).length} task(s) completed`);
     
     if (structure.sections.length > 0) {
       console.log('\n📝 Sections:');
       structure.sections.forEach((section, index) => {
         console.log(`${index + 1}. ${section.title}`);
-        console.log(`   - ${section.todos.length} tâche(s)`);
-        console.log(`   - ${section.todos.filter(t => t.checked).length} terminée(s)`);
+        console.log(`   - ${section.todos.length} task(s)`);
+        console.log(`   - ${section.todos.filter(t => t.checked).length} completed`);
       });
     }
     
-    displaySuccess('✅ Analyse hiérarchique terminée');
+    displaySuccess('✅ Hierarchical analysis completed');
     
   } catch (error) {
-    displayError('❌ Erreur lors de l\'analyse hiérarchique: ' + error.message);
+    displayError('❌ Error during hierarchical analysis: ' + error.message);
   }
 }

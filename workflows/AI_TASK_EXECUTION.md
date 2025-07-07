@@ -27,106 +27,69 @@ Extract task-id from URL: `https://www.notion.so/task-name-2270fffd93c2816c813cc
 npx notion-ai-tasks update <task-id> --status [inProgressStatus]
 ```
 
-### Step 3: Organize Your Work with Claude Todos
-When working on complex Notion tasks, organize your work using Claude's TodoWrite tool:
+### Step 3: Analyze Task Structure & Organize Your Work
+For complex Notion tasks, first analyze the hierarchical structure and organize your work using Claude's TodoWrite tool:
 
-#### For Tasks with Markdown Sections (# ## ### Titles):
-When Notion task has content sections with any heading level:
-```markdown
-# Main Section
-## Bug Description
-## Root Cause Analysis
-### Detailed Analysis
-### Impact Assessment
-## Fix Implementation  
-## Testing Requirements
+#### Check for Hierarchical Structure:
+```bash
+npx notion-ai-tasks hierarchical <task-id> --structure
 ```
 
-Organize your Claude todos by sections (adapt the # level to match):
+#### For Tasks with Hierarchical Content:
+If the task has nested sections or todos, use progressive decomposition:
+```bash
+npx notion-ai-tasks hierarchical <task-id> --progressive
+```
+
+This will generate step-by-step todos organized by hierarchy. Follow the generated steps:
+
+**Example Progressive Execution:**
 ```javascript
-// Start with main section
+// Step 1: Overview of all main sections
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"}
+  {id: "1", content: "Database Setup", status: "pending"},
+  {id: "2", content: "API Implementation", status: "pending"},
+  {id: "3", content: "Testing", status: "pending"}
 ]);
 
-// Progress through sub-sections
+// Step 2: Work on "Database Setup" section
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "in_progress"}
+  {id: "1", content: "Database Setup", status: "in_progress"},
+  {id: "2", content: "API Implementation", status: "pending"},
+  {id: "3", content: "Testing", status: "pending"}
 ]);
 
-// Handle deeper nesting (### level)
+// Step 3: Drill down to sub-tasks in "Database Setup"
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "in_progress"},
-  {id: "detailed", content: "Complete ### Detailed Analysis subsection", status: "in_progress"}
+  {id: "1", content: "Database Setup", status: "in_progress"},
+  {id: "1a", content: "Create schema", status: "in_progress"},
+  {id: "1b", content: "Add migrations", status: "pending"}
 ]);
 
-// Continue sequentially through all levels
+// Step 4: Complete sub-tasks and move to next
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "completed"},
-  {id: "root-cause", content: "Complete ## Root Cause Analysis section", status: "in_progress"}
+  {id: "1", content: "Database Setup", status: "completed"},
+  {id: "2", content: "API Implementation", status: "in_progress"},
+  {id: "3", content: "Testing", status: "pending"}
 ]);
 ```
 
-#### For Tasks with Nested Todos:
-When Notion task has nested structure like:
-```
-☐ Phase A: Preparation
-  ☐ Step A1: Research
-    ☐ Sub-step A1.1
-```
-
-Organize your Claude todos by levels:
+#### For Simple Tasks:
+For tasks without hierarchical structure, organize by simple sections:
 ```javascript
-// Level 1: Work on main phase
 TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "in_progress"}
-]);
-
-// Level 2: Drill down to steps
-TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "completed"},
-  {id: "step-a1", content: "Phase A → Step A1: Research", status: "in_progress"}
-]);
-
-// Level 3: Handle sub-steps
-TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "completed"},
-  {id: "step-a1", content: "Phase A → Step A1: Research", status: "completed"},
-  {id: "substep-a11", content: "Phase A → Step A1 → Sub-step A1.1", status: "in_progress"}
-]);
-```
-
-#### For Tasks with BOTH Sections AND Nested Todos:
-When a task has both markdown sections (any # level) and nested todos within sections:
-```javascript
-// Work on section first (use actual # level from Notion)
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"}
-]);
-
-// Then drill down to nested todos within that section
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"},
-  {id: "impl-solution", content: "## Fix Implementation → Implement solution", status: "in_progress"}
-]);
-
-// Handle sub-items within the todo (maintain section context)
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"},
-  {id: "impl-solution", content: "## Fix Implementation → Implement solution", status: "completed"},
-  {id: "impl-test", content: "## Fix Implementation → Test the fix", status: "in_progress"}
+  {id: "1", content: "Research requirements", status: "in_progress"},
+  {id: "2", content: "Implement solution", status: "pending"},
+  {id: "3", content: "Test implementation", status: "pending"}
 ]);
 ```
 
 **Key Principles:**
-- Work **sequentially** through sections/levels
+- **Use hierarchical analysis** for complex tasks
+- **Work sequentially** through sections/levels  
 - **Add todos progressively** as you drill down
 - **Keep completed context** in your todo list
 - **Respect dependencies** (parent before child)
-- **Combine section names** with arrow notation (→) for nested items
 
 ### Step 4: Update Notion Todos IMMEDIATELY After Completion
 ```bash

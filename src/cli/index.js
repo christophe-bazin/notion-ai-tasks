@@ -79,7 +79,6 @@ program
   .description('Analyze and manage hierarchical task structure')
   .option('-s, --structure', 'Show hierarchical structure')
   .option('-p, --progressive', 'Generate progressive todo steps')
-  .option('-l, --language <language>', 'Language for messages (fr/en)', 'fr')
   .action(async (taskId, options) => {
     await hierarchicalCommand(taskId, options);
   });
