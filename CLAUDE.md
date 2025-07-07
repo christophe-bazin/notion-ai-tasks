@@ -11,6 +11,26 @@ This file contains development guidelines for Claude Code when working on the `n
 3. **Configuration examples** in all .md files
 4. **CLAUDE.md** - Update this file if any project structure, guidelines, or practices change
 
+### **Task Execution Workflow (Feature Branches):**
+```bash
+# When taking a task from Notion for execution:
+
+# 1. Create feature branch from current branch
+git checkout -b feature/task-name-or-id
+
+# 2. Update task status in Notion to "In Progress"
+notion-tasks update <task-id> --status "In Progress"
+
+# 3. Work on the task following the implementation plan
+# 4. Make commits with clear messages during development
+# 5. Update todos in Notion as you progress
+# 6. When task is complete, push branch
+git push origin feature/task-name-or-id
+
+# 7. Create PR from feature branch to main/develop
+# 8. After PR merge, task will auto-update to "Test" status
+```
+
 ### **Release Flow (GitHub Actions Automated Publishing):**
 ```bash
 # 1. Create release branch
@@ -22,20 +42,42 @@ npm version patch|minor|major --no-git-tag-version
 # 3. Update README.md with new features/options
 # 4. Update CLAUDE.md if project structure, practices, or guidelines changed
 # 5. Test configuration examples
-# 6. Commit and push release branch
+# 6. Create release notes with changes since last release
+# 7. Commit and push release branch
 git add .
-git commit -m "bump version to X.X.X"
+git commit -m "bump version to X.X.X
+
+Release Notes:
+- Feature 1: Description
+- Feature 2: Description
+- Bug Fix: Description
+- Enhancement: Description"
 git push origin release/vX.X.X
 
-# 7. Create PR from release branch to main
-# 8. After PR merge, GitHub Actions will automatically publish to npm
+# 8. Create PR from release branch to main with release notes
+# 9. After PR merge, GitHub Actions will automatically publish to npm
 ```
 
 ### **Important Notes:**
+
+**For Task Execution:**
+- **Always create feature branches** for Notion tasks
+- **Update Notion status** to "In Progress" when starting work
+- **Follow branch naming**: `feature/task-name-or-id` or `feature/short-description`
+- **Keep commits atomic** and descriptive
+- **Update todos progressively** in Notion during development
+
+**For Releases:**
 - **Always use release branches** for version updates
 - **Both package.json AND package-lock.json** must be updated with same version
 - **Use `--no-git-tag-version`** to prevent npm from creating tags locally
+- **Include detailed release notes** in commit message
 - **GitHub Actions handles npm publishing** after PR merge to main
+
+**For Commits:**
+- **NEVER add Claude as Co-Authored-By** in commit messages
+- **Keep commit messages clean** and professional
+- **Focus on the actual changes** made, not the AI assistance used
 
 ## 🛠️ **Technology Stack**
 
