@@ -159,6 +159,34 @@ notion-tasks todo <task-id> "Task to complete" true
 - `<todoText>` - Todo text
 - `<checked>` - true/false or 1/0 for completion status
 
+#### Content Management
+```bash
+# Add content to existing task (supports markdown)
+notion-tasks add-content <task-id> --content "## New Section\nThis is **bold** text with [links](https://example.com)"
+
+# Add simple text content  
+notion-tasks add-content <task-id> --text "Simple text content to add"
+```
+
+**Add Content Command Options:**
+- `<task-id>` - Task ID (required)
+- `-c, --content` - Markdown content to add
+- `-t, --text` - Plain text content to add
+
+#### Hierarchical Task Analysis
+```bash
+# Analyze hierarchical structure of complex tasks
+notion-tasks hierarchical <task-id> --structure
+
+# Generate progressive todo steps for step-by-step execution
+notion-tasks hierarchical <task-id> --progressive
+```
+
+**Hierarchical Command Options:**
+- `<task-id>` - Task ID (required)
+- `-s, --structure` - Show hierarchical structure analysis
+- `-p, --progressive` - Generate progressive todo steps
+
 #### Natural Language Commands (AI assistants)
 ```bash
 notion-tasks work on this feature https://www.notion.so/...

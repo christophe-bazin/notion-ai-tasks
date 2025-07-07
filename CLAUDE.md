@@ -19,7 +19,7 @@ This file contains development guidelines for Claude Code when working on the `n
 git checkout -b feature/task-name-or-id
 
 # 2. Update task status in Notion to "In Progress"
-npx notion-ai-tasks update <task-id> --status "In Progress"
+node cli.js update <task-id> --status "In Progress"
 
 # 3. Work on the task following the implementation plan
 # 4. Make commits with clear messages during development
@@ -29,6 +29,21 @@ git push origin feature/task-name-or-id
 
 # 7. Create PR from feature branch to main/develop
 # 8. After PR merge, task will auto-update to "Test" status
+```
+
+**⚠️ Important: This project development uses local CLI execution**
+
+All commands in this development context use `node cli.js` since we're working on the source code locally.
+
+**Local development commands:**
+```bash
+# All CLI commands for this project development
+node cli.js list
+node cli.js show <task-id>
+node cli.js update <task-id> --status "In Progress"
+node cli.js todo <task-id> "Task description" true
+node cli.js add-content <task-id> --content "Content"
+node cli.js hierarchical <task-id> --structure
 ```
 
 ### **Release Flow (GitHub Actions Automated Publishing):**
@@ -47,6 +62,7 @@ npm version patch|minor|major --no-git-tag-version
 git add .
 git commit -m "bump version to X.X.X
 
+Release Notes:
 - Feature 1: Description
 - Feature 2: Description
 - Bug Fix: Description
@@ -54,7 +70,13 @@ git commit -m "bump version to X.X.X
 git push origin release/vX.X.X
 
 # 8. Create PR from release branch to main with release notes
-# 9. After PR merge, GitHub Actions will automatically publish to npm
+# 9. After PR merge, switch to main and create tag to trigger publication
+git checkout main
+git pull origin main
+git tag vX.X.X
+git push origin vX.X.X
+
+# 10. GitHub Actions will automatically publish to npm when tag is pushed
 ```
 
 ### **Semantic Versioning Guidelines:**
@@ -103,7 +125,8 @@ npm version major --no-git-tag-version
 - **Both package.json AND package-lock.json** must be updated with same version
 - **Use `--no-git-tag-version`** to prevent npm from creating tags locally
 - **Include detailed release notes** in commit message
-- **GitHub Actions handles npm publishing** after PR merge to main
+- **CRITICAL: Create and push git tag** after PR merge to trigger GitHub Actions publishing
+- **GitHub Actions publishes to npm** when git tag is pushed (not on PR merge)
 
 **For Commits:**
 - **NEVER add Claude as Co-Authored-By** in commit messages
@@ -274,7 +297,7 @@ notion-ai-tasks/
 ### **Configuration Testing:**
 ```bash
 # Test basic functionality
-npx notion-ai-tasks list
+node cli.js list
 
 # Test configuration loading
 node -e "console.log(JSON.parse(require('fs').readFileSync('./notion-tasks.config.json')))"
@@ -342,3 +365,9 @@ try {
 - All workflow .md files tested
 - No hardcoded values in code
 - All configuration options documented
+
+### **After Release PR Merge:**
+- **MANDATORY: Create and push git tag** to trigger npm publishing
+- Verify GitHub Actions workflow completes successfully
+- Check that new version appears on npm registry
+- Update any dependent projects if needed
