@@ -27,6 +27,7 @@
     "index.js",
     "cli.js",
     "workflow-loader.js",
+    "src/",
     "workflows/"
   ],
   "dependencies": {

@@ -107,13 +107,32 @@ throw new Error(`Todo containing "${todoText}" not found`);
 ### **Core Files:**
 ```
 notion-ai-tasks/
-├── index.js                    # Core NotionTaskManager class
-├── cli.js                      # CLI interface
+├── index.js                    # Main export file
+├── cli.js                      # CLI entry point
 ├── workflow-loader.js          # Workflow file loader utility
 ├── package.json                # Package configuration
 ├── README.md                   # Main documentation
 ├── CLAUDE.md                   # This file - development guidelines
 ├── notion-tasks.config.json    # Project configuration template
+├── src/                        # Modular source code
+│   ├── core/                   # Core business logic
+│   │   ├── NotionClient.js     # Notion API client & config
+│   │   ├── TaskManager.js      # Main task management logic
+│   │   └── ContentManager.js   # Content & blocks management
+│   ├── utils/                  # Utility functions
+│   │   ├── urlParser.js        # URL/ID extraction
+│   │   ├── displayHelpers.js   # CLI display functions
+│   │   ├── markdownParser.js   # Markdown parsing utilities
+│   │   └── nlpParser.js        # Natural language parsing
+│   └── cli/                    # CLI commands
+│       ├── index.js            # CLI setup & routing
+│       └── commands/           # Individual commands
+│           ├── list.js
+│           ├── show.js
+│           ├── create.js
+│           ├── update.js
+│           ├── todo.js
+│           └── natural.js
 └── workflows/                  # AI workflow guides
     ├── AI_WORKFLOW_SELECTOR.md # AI workflow selector
     ├── AI_TASK_EXECUTION.md    # AI execution workflow
