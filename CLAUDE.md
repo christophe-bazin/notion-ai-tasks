@@ -79,6 +79,13 @@ git push origin release/vX.X.X
 - **Focus on the actual changes** made, not the AI assistance used
 - **Subject line max 50 characters** - GitHub standard for commit titles
 - **Body text max 72 characters** - Wrap commit body at 72 characters
+- **Use --amend for small fixes** - For typos, small fixes, or direct improvements to the last commit:
+  ```bash
+  # For small fixes or improvements to the last commit
+  git add .
+  git commit --amend
+  # Edit commit message to reflect the complete change
+  ```
 
 ## 🛠️ **Technology Stack**
 
