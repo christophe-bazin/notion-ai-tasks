@@ -47,7 +47,6 @@ npm version patch|minor|major --no-git-tag-version
 git add .
 git commit -m "bump version to X.X.X
 
-Release Notes:
 - Feature 1: Description
 - Feature 2: Description
 - Bug Fix: Description
@@ -78,6 +77,8 @@ git push origin release/vX.X.X
 - **NEVER add Claude as Co-Authored-By** in commit messages
 - **Keep commit messages clean** and professional
 - **Focus on the actual changes** made, not the AI assistance used
+- **Subject line max 50 characters** - GitHub standard for commit titles
+- **Body text max 72 characters** - Wrap commit body at 72 characters
 
 ## 🛠️ **Technology Stack**
 
