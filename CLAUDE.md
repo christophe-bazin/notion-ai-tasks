@@ -19,7 +19,7 @@ This file contains development guidelines for Claude Code when working on the `n
 git checkout -b feature/task-name-or-id
 
 # 2. Update task status in Notion to "In Progress"
-notion-tasks update <task-id> --status "In Progress"
+npx notion-ai-tasks update <task-id> --status "In Progress"
 
 # 3. Work on the task following the implementation plan
 # 4. Make commits with clear messages during development
@@ -139,11 +139,54 @@ npm version major --no-git-tag-version
 ## 📋 **Development Best Practices**
 
 ### **Code Style:**
-- **No comments** unless explicitly requested by user
+- **Minimal comments** - Prefer self-documenting code over excessive comments
 - **ES6+ syntax** - Use modern JavaScript features
 - **Async/await** - Prefer over Promises
 - **Error handling** - Always wrap in try/catch
 - **Destructuring** - Use object/array destructuring where appropriate
+
+### **Comment Guidelines:**
+**When to add comments:**
+- **Complex business logic** that isn't immediately obvious
+- **Non-obvious technical decisions** or workarounds
+- **API integrations** with external services (Notion, etc.)
+- **Security-critical sections** requiring special attention
+- **Performance optimizations** that sacrifice readability
+
+**When NOT to add comments:**
+- **Obvious operations** - `const user = getUser()` doesn't need "Get user"
+- **Self-explanatory variable names** - `isValid`, `hasPermission`
+- **Standard patterns** - basic loops, simple conditionals
+- **Redundant descriptions** - Don't repeat what the code already says
+
+**Comment style:**
+```javascript
+// Bad: obvious and redundant
+const users = []; // Create empty array
+users.push(newUser); // Add user to array
+
+// Good: explains the why, not the what
+const users = [];
+// Batch process users to avoid rate limiting Notion API
+for (const user of userBatch) {
+  await processWithDelay(user);
+}
+
+// Good: explains non-obvious business logic
+// Match status case-insensitively because Notion vs config may differ
+const statusMatch = currentStatus.toLowerCase() === targetStatus.toLowerCase();
+
+// Good: explains technical decisions
+// Use Set for O(1) lookup performance with large task lists
+const completedTaskIds = new Set(completed.map(t => t.id));
+```
+
+**Comment principles:**
+- **Explain WHY, not WHAT** - Focus on reasoning, not obvious operations
+- **Concise but complete** - One line preferred, but add context when needed
+- **Present tense** - "Updates task" not "Will update task"
+- **Business context** - Explain domain-specific decisions
+- **Technical context** - Clarify non-obvious implementation choices
 
 ### **Configuration Management:**
 - **Never hardcode values** - Always use configuration variables
@@ -156,16 +199,6 @@ npm version major --no-git-tag-version
 - **Chain-friendly** - Methods should be composable
 
 ## 📚 **Documentation Standards**
-
-### **Comments in Code:**
-```javascript
-// Load configuration from notion-tasks.config.json in current directory
-// Update checkbox properties with case-insensitive matching
-// Apply all todo updates simultaneously
-```
-- **Factual, not explanatory** - What the code does, not why
-- **Concise** - One line preferred
-- **Present tense** - "Updates task" not "Will update task"
 
 ### **Error Messages:**
 ```javascript
@@ -205,7 +238,8 @@ notion-ai-tasks/
 │   │   ├── urlParser.js        # URL/ID extraction
 │   │   ├── displayHelpers.js   # CLI display functions
 │   │   ├── markdownParser.js   # Markdown parsing utilities
-│   │   └── nlpParser.js        # Natural language parsing
+│   │   ├── nlpParser.js        # Natural language parsing
+│   │   └── hierarchicalTaskParser.js # Hierarchical task decomposition
 │   └── cli/                    # CLI commands
 │       ├── index.js            # CLI setup & routing
 │       └── commands/           # Individual commands
@@ -214,7 +248,9 @@ notion-ai-tasks/
 │           ├── create.js
 │           ├── update.js
 │           ├── todo.js
-│           └── natural.js
+│           ├── natural.js
+│           ├── hierarchical.js
+│           └── addContent.js
 └── workflows/                  # AI workflow guides
     ├── AI_WORKFLOW_SELECTOR.md # AI workflow selector
     ├── AI_TASK_EXECUTION.md    # AI execution workflow
@@ -256,14 +292,12 @@ try {
 }
 ```
 
-### **Development Rules:**
-- **Never hardcode values** - Always use configuration variables
-- **Explicit configuration** - Use named properties instead of arrays for statuses
-- **Error on missing config** - Throw clear errors if required config is missing
-- **Case-insensitive matching** - Match property names ignoring case
-- **Type validation** - Ensure properties match expected types
+### **Notion-Specific Rules:**
+- **Case-insensitive matching** - Match property names ignoring case (Notion vs config differences)
+- **Type validation** - Ensure properties match expected Notion types
 - **Graceful degradation** - Handle missing optional config (like testStatus) with warnings
 - **Status validation** - Validate that configured statuses exist in Notion database
+- **Rate limiting** - Respect Notion API rate limits with proper delays
 
 ## 🔄 **Workflow Integration**
 
