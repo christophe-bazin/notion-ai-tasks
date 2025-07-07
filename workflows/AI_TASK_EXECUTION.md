@@ -27,106 +27,115 @@ Extract task-id from URL: `https://www.notion.so/task-name-2270fffd93c2816c813cc
 npx notion-ai-tasks update <task-id> --status [inProgressStatus]
 ```
 
-### Step 3: Organize Your Work with Claude Todos
-When working on complex Notion tasks, organize your work using Claude's TodoWrite tool:
+### Step 3: Analyze Task Structure & Organize Your Work
+For complex Notion tasks, first analyze the hierarchical structure and follow progressive decomposition:
 
-#### For Tasks with Markdown Sections (# ## ### Titles):
-When Notion task has content sections with any heading level:
-```markdown
-# Main Section
-## Bug Description
-## Root Cause Analysis
-### Detailed Analysis
-### Impact Assessment
-## Fix Implementation  
-## Testing Requirements
+#### Check for Hierarchical Structure:
+```bash
+npx notion-ai-tasks hierarchical <task-id> --structure
 ```
 
-Organize your Claude todos by sections (adapt the # level to match):
+#### For Tasks with Hierarchical Content:
+If the task has nested sections or todos, use progressive decomposition:
+```bash
+npx notion-ai-tasks hierarchical <task-id> --progressive
+```
+
+**CRITICAL: Follow the generated progressive steps EXACTLY. Do NOT mix levels.**
+
+**Progressive Execution Workflow:**
+1. **Get the progressive steps** from the hierarchical command
+2. **Execute each step individually** following the exact todo list provided
+3. **Update Claude todos to match ONLY the current step** - don't mix with other levels
+4. **Complete current step fully** before moving to next step
+
+**Example Progressive Execution:**
 ```javascript
-// Start with main section
+// Generated Step 1: Overview
+"Here are all the tasks to do"
+Update todo
+- [ ] Section 1
+- [ ] Section 2  
+- [ ] Section 3
+
+// Claude todos for Step 1 ONLY:
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"}
+  {id: "1", content: "Section 1", status: "pending"},
+  {id: "2", content: "Section 2", status: "pending"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 
-// Progress through sub-sections
+// Generated Step 2: Focus on Section 1
+"Working on Section 1"
+Update todo
+- [ ] Task 1.1
+- [ ] Task 1.2
+
+// Claude todos for Step 2 ONLY:
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "in_progress"}
+  {id: "1", content: "Task 1.1", status: "in_progress"},
+  {id: "2", content: "Task 1.2", status: "pending"}
 ]);
 
-// Handle deeper nesting (### level)
+// Generated Step 3: Section 1 completed - return to overview
+"Section completed Section 1"
+Update todo
+- [x] Section 1  ✅
+- [ ] Section 2
+- [ ] Section 3
+
+// Claude todos for Step 3 - overview with progress:
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "in_progress"},
-  {id: "detailed", content: "Complete ### Detailed Analysis subsection", status: "in_progress"}
+  {id: "1", content: "Section 1", status: "completed"},
+  {id: "2", content: "Section 2", status: "pending"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 
-// Continue sequentially through all levels
+// Generated Step 4: Focus on Section 2
+"Working on Section 2"  
+Update todo
+- [ ] Task 2.1
+- [ ] Task 2.2
+
+// Claude todos for Step 4 ONLY:
 TodoWrite([
-  {id: "main", content: "Complete # Main Section", status: "in_progress"},
-  {id: "bug-desc", content: "Complete ## Bug Description section", status: "completed"},
-  {id: "root-cause", content: "Complete ## Root Cause Analysis section", status: "in_progress"}
+  {id: "1", content: "Task 2.1", status: "in_progress"},
+  {id: "2", content: "Task 2.2", status: "pending"}
+]);
+
+// Generated Step 5: Section 2 completed - return to overview
+"Section completed Section 2"
+Update todo
+- [x] Section 1  ✅
+- [x] Section 2  ✅
+- [ ] Section 3
+
+// Claude todos for Step 5 - overview with progress:
+TodoWrite([
+  {id: "1", content: "Section 1", status: "completed"},
+  {id: "2", content: "Section 2", status: "completed"},
+  {id: "3", content: "Section 3", status: "pending"}
 ]);
 ```
 
-#### For Tasks with Nested Todos:
-When Notion task has nested structure like:
-```
-☐ Phase A: Preparation
-  ☐ Step A1: Research
-    ☐ Sub-step A1.1
-```
-
-Organize your Claude todos by levels:
+#### For Simple Tasks:
+For tasks without hierarchical structure, organize by simple sections:
 ```javascript
-// Level 1: Work on main phase
 TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "in_progress"}
-]);
-
-// Level 2: Drill down to steps
-TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "completed"},
-  {id: "step-a1", content: "Phase A → Step A1: Research", status: "in_progress"}
-]);
-
-// Level 3: Handle sub-steps
-TodoWrite([
-  {id: "phase-a", content: "Phase A: Preparation", status: "completed"},
-  {id: "step-a1", content: "Phase A → Step A1: Research", status: "completed"},
-  {id: "substep-a11", content: "Phase A → Step A1 → Sub-step A1.1", status: "in_progress"}
-]);
-```
-
-#### For Tasks with BOTH Sections AND Nested Todos:
-When a task has both markdown sections (any # level) and nested todos within sections:
-```javascript
-// Work on section first (use actual # level from Notion)
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"}
-]);
-
-// Then drill down to nested todos within that section
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"},
-  {id: "impl-solution", content: "## Fix Implementation → Implement solution", status: "in_progress"}
-]);
-
-// Handle sub-items within the todo (maintain section context)
-TodoWrite([
-  {id: "impl-section", content: "Complete ## Fix Implementation section", status: "in_progress"},
-  {id: "impl-solution", content: "## Fix Implementation → Implement solution", status: "completed"},
-  {id: "impl-test", content: "## Fix Implementation → Test the fix", status: "in_progress"}
+  {id: "1", content: "Research requirements", status: "in_progress"},
+  {id: "2", content: "Implement solution", status: "pending"},
+  {id: "3", content: "Test implementation", status: "pending"}
 ]);
 ```
 
 **Key Principles:**
-- Work **sequentially** through sections/levels
-- **Add todos progressively** as you drill down
-- **Keep completed context** in your todo list
-- **Respect dependencies** (parent before child)
-- **Combine section names** with arrow notation (→) for nested items
+- **Generate progressive steps first** using hierarchical command
+- **Follow generated steps exactly** - each step provides the complete todo list for that level
+- **Match Claude todos to current step only** - don't carry forward other sections/levels
+- **Return to overview after each section** - the system generates overview return steps automatically
+- **Update section status progressively** - mark sections as completed when returning to overview
+- **Complete current step fully** before advancing to next step
+- **Never mix hierarchical levels** in Claude todos
 
 ### Step 4: Update Notion Todos IMMEDIATELY After Completion
 ```bash

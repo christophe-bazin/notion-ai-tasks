@@ -82,3 +82,15 @@ export function displayTaskList(tasks) {
     console.log('');
   });
 }
+
+export function displaySuccess(message) {
+  console.log(`✅ ${message}`);
+}
+
+export function displayError(message) {
+  console.error(`❌ ${message}`);
+}
+
+export function displayInfo(message) {
+  console.log(`ℹ️  ${message}`);
+}
