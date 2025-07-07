@@ -57,6 +57,38 @@ git push origin release/vX.X.X
 # 9. After PR merge, GitHub Actions will automatically publish to npm
 ```
 
+### **Semantic Versioning Guidelines:**
+
+**PATCH (X.X.1)** - Bug fixes and small improvements:
+```bash
+npm version patch --no-git-tag-version
+```
+- Bug fixes that don't change API
+- Documentation updates
+- Internal refactoring without behavior change
+- Performance improvements
+- Security patches
+
+**MINOR (X.1.0)** - New features that are backward compatible:
+```bash
+npm version minor --no-git-tag-version
+```
+- New CLI commands or options
+- New API methods or properties
+- New configuration options (with defaults)
+- Enhanced functionality that doesn't break existing usage
+- New workflow files or templates
+
+**MAJOR (1.0.0)** - Breaking changes:
+```bash
+npm version major --no-git-tag-version
+```
+- Changes to existing API method signatures
+- Removal of CLI commands or options
+- Changes to configuration file structure requiring user updates
+- Changes to default behavior that could break existing workflows
+- Node.js version requirement changes
+
 ### **Important Notes:**
 
 **For Task Execution:**
@@ -230,6 +262,8 @@ try {
 - **Error on missing config** - Throw clear errors if required config is missing
 - **Case-insensitive matching** - Match property names ignoring case
 - **Type validation** - Ensure properties match expected types
+- **Graceful degradation** - Handle missing optional config (like testStatus) with warnings
+- **Status validation** - Validate that configured statuses exist in Notion database
 
 ## 🔄 **Workflow Integration**
 

@@ -20,8 +20,8 @@ Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to sea
 1. **AI reads task specifications** from Notion database
 2. **AI updates task status** to "In Progress" and follows implementation plan
 3. **AI marks todos as complete** during development
-4. **System automatically moves task to "Test"** when all todos are done
-5. **Human manually marks as "Done"** after validation
+4. **System automatically moves task to "Test"** when all todos are done (prevents accidental auto-completion)
+5. **Human manually validates and marks as "Done"** after testing
 
 ## 🎬 Demo
 
@@ -68,6 +68,26 @@ npm install -g notion-ai-tasks
      "completionStatus": "Done"
    }
    ```
+
+### Configuration Fields
+
+**Required Fields:**
+- `notionToken` - Your Notion integration token
+- `databaseId` - Your Notion database ID
+- `defaultStatus` - Initial status for new tasks
+- `inProgressStatus` - Status when work begins
+
+**Optional Fields:**
+- `testStatus` - Status for completed tasks awaiting manual validation (recommended)
+- `completionStatus` - Final status for validated tasks
+- `statuses`, `priorities`, `types` - Used for validation but not required
+
+**Status Auto-Progression:**
+- `defaultStatus` → `inProgressStatus` (when first todo is checked)
+- `inProgressStatus` → `testStatus` (when all todos completed) 
+- `testStatus` → `completionStatus` (manual only)
+
+⚠️ **Note:** If `testStatus` is not configured, tasks will remain in `inProgressStatus` when completed, requiring manual status updates to prevent accidental auto-completion.
 
 ## 📋 Usage
 
