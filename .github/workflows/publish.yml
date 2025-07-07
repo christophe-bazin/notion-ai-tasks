@@ -2,7 +2,6 @@ name: Publish to NPM
 
 on:
   push:
-    branches: [main]
     tags:
       - 'v*'
 
@@ -30,17 +29,7 @@ jobs:
         id: package-version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
         
-      - name: Check if version tag exists
-        id: check-tag
-        run: |
-          if git tag -l "v${{ steps.package-version.outputs.version }}" | grep -q "v${{ steps.package-version.outputs.version }}"; then
-            echo "tag-exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "tag-exists=false" >> $GITHUB_OUTPUT
-          fi
-        
       - name: Publish to NPM
-        if: steps.check-tag.outputs.tag-exists == 'true'
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
