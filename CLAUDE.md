@@ -19,7 +19,7 @@ This file contains development guidelines for Claude Code when working on the `n
 git checkout -b feature/task-name-or-id
 
 # 2. Update task status in Notion to "In Progress"
-npx notion-ai-tasks update <task-id> --status "In Progress"
+node cli.js update <task-id> --status "In Progress"
 
 # 3. Work on the task following the implementation plan
 # 4. Make commits with clear messages during development
@@ -274,7 +274,7 @@ notion-ai-tasks/
 ### **Configuration Testing:**
 ```bash
 # Test basic functionality
-npx notion-ai-tasks list
+node cli.js list
 
 # Test configuration loading
 node -e "console.log(JSON.parse(require('fs').readFileSync('./notion-tasks.config.json')))"
