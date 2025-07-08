@@ -251,9 +251,7 @@ notion-tasks add-content <task-id> -c "## 🧪 Implementation Summary & Testing 
 ### Test scenarios:
 1. **Happy path:** [Expected normal behavior]
 2. **Edge cases:** [Boundary conditions to test]
-3. **Error handling:** [Failure scenarios to verify]
-
-[+]"
+3. **Error handling:** [Failure scenarios to verify]"
 ```
 
 ### Step 7: Final Status Update

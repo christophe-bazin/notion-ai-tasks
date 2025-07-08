@@ -159,6 +159,65 @@ npm version major --no-git-tag-version
 - **cli.js** - Command-line interface with commander
 - **notion-tasks.config.json** - Project-specific configuration
 
+## 🔧 **Command Strategy**
+
+### **Context-Aware Command Usage**
+
+The project supports three different command formats depending on the context:
+
+#### **1. End Users (Global Installation)**
+```bash
+# After: npm install -g notion-ai-tasks
+notion-tasks list
+notion-tasks show <task-id>
+notion-tasks update <task-id> --status "In Progress"
+```
+**When to use:** Production usage, end users, README.md documentation
+
+#### **2. Local Development**
+```bash
+# For contributors and local development
+node cli.js list
+node cli.js show <task-id>
+node cli.js update <task-id> --status "In Progress"
+```
+**When to use:** CLAUDE.md documentation, local development, contributor workflows
+
+#### **3. AI Workflows (npx)**
+```bash
+# For AI assistants and workflow automation
+npx notion-ai-tasks show <task-id>
+npx notion-ai-tasks update <task-id> --status "In Progress"
+npx notion-ai-tasks hierarchical <task-id> --progressive
+```
+**When to use:** AI workflow files, automated scripts, one-time executions
+
+### **Documentation Strategy**
+
+- **README.md** → Use `notion-tasks` (end user context)
+- **CLAUDE.md** → Use `node cli.js` (local development context)
+- **workflows/*.md** → Use `npx notion-ai-tasks` (AI workflow context)
+
+### **Package.json Bin Alias**
+
+The `notion-tasks` command is defined in package.json:
+```json
+{
+  "bin": {
+    "notion-tasks": "./cli.js"
+  }
+}
+```
+
+This creates a global command alias that points to the same `cli.js` file used locally.
+
+### **Best Practices**
+
+1. **Context Consistency**: Always use the appropriate command format for your context
+2. **Documentation Alignment**: Match command examples to target audience
+3. **Error Prevention**: Clear context reduces confusion between formats
+4. **Team Communication**: Ensure all contributors understand the three contexts
+
 ## 📋 **Development Best Practices**
 
 ### **Code Style:**

@@ -4,24 +4,74 @@
 
 Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to seamlessly create, update, and execute development tasks stored in Notion. It provides structured workflows for task lifecycle management with automatic progress tracking and status transitions.
 
+## 🤖 AI Compatibility
+
+- **Claude Code**: Full integration with command execution and natural language parsing
+- **GitHub Copilot**: Can generate correct commands (manual execution)
+- **Other AI tools**: Compatible with workflow guidelines (manual execution)
+
+### Natural Language Examples:
+```bash
+# AI assistants can interpret these commands
+"Work on this feature: https://www.notion.so/...?p=abc123"
+"Create a task for implementing user authentication"
+"Update the priority of task X to High"
+"Mark the database setup todo as complete"
+```
+
 ## 🎯 Key Features
 
+### Core Task Management
+- **Create Tasks**: Generate tasks directly from CLI with structured templates
+- **Update Tasks**: Modify task status, content, and properties seamlessly
+- **AI-Assisted Development**: Let AI automatically develop and execute tasks
+- **Natural Language Support**: All operations work in natural language (French and English)
+
+### Intelligent Hierarchical Structure
+- **Task/Subtask Architecture**: Respects Notion's hierarchical section structure
+- **Logical Iteration Order**: Todos are processed in logical order based on task hierarchy
+- **Progressive Decomposition**: Complex tasks are broken down into manageable steps
+- **Automatic Segmentation**: AI can segment task display and execution based on Notion structure
+
+### Advanced AI Integration
 - **AI-First Design**: Built specifically for AI assistant workflows
 - **Natural Language Commands**: AI can parse commands like "work on this feature URL" or "create a task for X"
 - **URL Recognition**: Automatically extracts task IDs from Notion URLs (including `p=` parameter format)
-- **Automated Status Management**: Tasks automatically progress from "Not Started" → "In Progress" → "Test" → "Done"
+- **Complete Execution Flow**: Full task lifecycle from creation to completion with progress reporting
+- **Implementation Summary**: Automatic generation of test recommendations and completion reports
+
+### Smart Status Management
+- **Automated Progression**: Tasks automatically progress from "Not Started" → "In Progress" → "Test" → "Done"
+- **Test Phase Protection**: Prevents accidental auto-completion with mandatory test validation
 - **Progress Tracking**: Todo completion automatically updates task status
+- **Content Management**: Add progress notes and implementation details during development
+
+### Development Workflow
+- **Bidirectional Sync**: Changes are reflected in Notion in real-time
 - **Structured Templates**: Pre-defined task structures for bugs, features, documentation, and refactoring
 - **CLI & API**: Both command-line interface and programmatic access
 - **Configurable**: Customize statuses, priorities, and types per project
 
 ## 🔄 How It Works
 
-1. **AI reads task specifications** from Notion database
-2. **AI updates task status** to "In Progress" and follows implementation plan
-3. **AI marks todos as complete** during development
-4. **System automatically moves task to "Test"** when all todos are done (prevents accidental auto-completion)
-5. **Human manually validates and marks as "Done"** after testing
+### AI-Powered Task Execution Workflow
+
+1. **Context Analysis**: AI reads task specifications from Notion database and analyzes requirements
+2. **Progressive Decomposition**: Complex tasks are broken down using hierarchical structure analysis
+3. **Status Progression**: Task automatically moves from "Not Started" → "In Progress" when work begins
+4. **Intelligent Execution**: AI processes todos in logical order based on task hierarchy and structure
+5. **Real-time Updates**: Progress is tracked and synced to Notion as each todo is completed
+6. **Implementation Summary**: AI generates test recommendations and completion reports
+7. **Test Phase Protection**: System automatically moves task to "Test" when all todos are done (prevents accidental auto-completion)
+8. **Manual Validation**: Human manually validates and marks as "Done" after testing
+
+### Smart Status Management
+
+- **Automatic Progression**: Tasks flow through statuses based on completion percentage
+- **Test Phase**: Mandatory intermediate step between "In Progress" and "Done" 
+- **Protection Against Auto-completion**: Prevents tasks from being marked "Done" without human validation
+- **Progress Tracking**: Real-time updates based on todo completion status
+- **Content Management**: Add implementation notes and progress updates during development
 
 ## 🎬 Demo
 
@@ -161,37 +211,54 @@ notion-tasks todo <task-id> "Task to complete" true
 
 #### Content Management
 ```bash
-# Add content to existing task (supports markdown)
-notion-tasks add-content <task-id> --content "## New Section\nThis is **bold** text with [links](https://example.com)"
+# Add content to existing task (markdown format)
+notion-tasks add-content <task-id> --content "## New section\n- Added feature\n- Bug fix"
 
-# Add simple text content  
-notion-tasks add-content <task-id> --text "Simple text content to add"
+# Add simple text content
+notion-tasks add-content <task-id> --text "Additional notes and progress updates"
+
+# Add content with markdown formatting
+notion-tasks add-content <task-id> -c "### Implementation Progress\n- [x] Database setup\n- [ ] API endpoints\n- [ ] Frontend integration"
 ```
 
-**Add Content Command Options:**
+**Add-Content Command Options:**
 - `<task-id>` - Task ID (required)
-- `-c, --content` - Markdown content to add
-- `-t, --text` - Plain text content to add
+- `-c, --content` - Content to add in markdown format
+- `-t, --text` - Simple text content to add
 
 #### Hierarchical Task Analysis
 ```bash
-# Analyze hierarchical structure of complex tasks
+# Analyze task structure
 notion-tasks hierarchical <task-id> --structure
 
-# Generate progressive todo steps for step-by-step execution
+# Get progressive decomposition for complex tasks
 notion-tasks hierarchical <task-id> --progressive
+
+# Show task hierarchy in detail
+notion-tasks hierarchical <task-id> --detailed
 ```
 
 **Hierarchical Command Options:**
 - `<task-id>` - Task ID (required)
-- `-s, --structure` - Show hierarchical structure analysis
-- `-p, --progressive` - Generate progressive todo steps
+- `--structure` - Show hierarchical structure analysis
+- `--progressive` - Generate progressive execution steps
+- `--detailed` - Show detailed hierarchy breakdown
 
 #### Natural Language Commands (AI assistants)
 ```bash
+# Task execution
 notion-tasks work on this feature https://www.notion.so/...
 notion-tasks create a task for implementing user authentication
 notion-tasks update the priority of task X to High
+
+# Content management
+notion-tasks add progress notes to task Y
+notion-tasks add implementation details to https://www.notion.so/...?p=abc123
+
+# Hierarchical analysis
+notion-tasks analyze the structure of task Z
+notion-tasks break down this complex task https://www.notion.so/...
+notion-tasks show me the progressive steps for task ABC
 ```
 
 ### API Usage
@@ -249,72 +316,44 @@ await taskManager.addContentToTask(taskId, [
 
 // Update a todo in task content
 await taskManager.updateTodoInContent(taskId, 'Complete this task', true);
+
+// Get task progress (completion percentage)
+const progress = await taskManager.getTaskProgress(taskId);
+console.log(`Task is ${progress.percentage}% complete`);
+
+// Mark multiple steps as complete
+await taskManager.markTaskProgress(taskId, [
+  'Setup database',
+  'Create API endpoints',
+  'Add unit tests'
+]);
+
+// Auto-update task status based on progress
+await taskManager.updateTaskStatusBasedOnProgress(taskId);
 ```
 
 ## 🛠️ API Methods
 
+### Core Task Management
 - `getTasks()` - Returns array of all tasks
 - `getTask(taskId)` - Get specific task with content
 - `createTask(taskData)` - Creates new task
 - `updateTask(taskId, updates)` - Updates task properties
-- `addContentToTask(taskId, content)` - Adds content blocks to task
-- `updateTodoInContent(taskId, todoText, checked)` - Updates specific todo
-- `getTaskProgress(taskId)` - Gets completion percentage
-- `markTaskProgress(taskId, steps)` - Mark multiple steps complete
-- `updateTaskStatusBasedOnProgress(taskId)` - Auto-update status based on progress
 - `extractTaskIdFromUrl(url)` - Extract task ID from various Notion URL formats
 
-## 📁 Project Structure
+### Content Management
+- `addContentToTask(taskId, content)` - Adds content blocks to task
+- `updateTodoInContent(taskId, todoText, checked)` - Updates specific todo
 
-```
-notion-ai-tasks/
-├── index.js                    # Main export file
-├── cli.js                      # CLI entry point
-├── workflow-loader.js          # Workflow file loader utility
-├── package.json                # Package configuration
-├── README.md                   # Main documentation
-├── CLAUDE.md                   # Development guidelines
-├── notion-tasks.config.json    # Project configuration template
-├── src/                        # Modular source code
-│   ├── core/                   # Core business logic
-│   │   ├── NotionClient.js     # Notion API client & config
-│   │   ├── TaskManager.js      # Main task management logic
-│   │   └── ContentManager.js   # Content & blocks management
-│   ├── utils/                  # Utility functions
-│   │   ├── urlParser.js        # URL/ID extraction
-│   │   ├── displayHelpers.js   # CLI display functions
-│   │   ├── markdownParser.js   # Markdown parsing utilities
-│   │   └── nlpParser.js        # Natural language parsing
-│   └── cli/                    # CLI commands
-│       ├── index.js            # CLI setup & routing
-│       └── commands/           # Individual commands
-│           ├── list.js
-│           ├── show.js
-│           ├── create.js
-│           ├── update.js
-│           ├── todo.js
-│           └── natural.js
-└── workflows/                  # AI workflow guides
-    ├── AI_WORKFLOW_SELECTOR.md # AI workflow selector
-    ├── AI_TASK_EXECUTION.md    # AI execution workflow
-    ├── AI_TASK_CREATION.md     # AI task creation guide
-    └── AI_TASK_UPDATE.md       # AI task update guide
-```
+### Progress Tracking
+- `getTaskProgress(taskId)` - Gets completion percentage and progress details
+- `markTaskProgress(taskId, steps)` - Mark multiple steps as complete in batch
+- `updateTaskStatusBasedOnProgress(taskId)` - Auto-update status based on completion percentage
 
-## 🤖 AI Compatibility
-
-- **Claude Code**: Full integration with command execution and natural language parsing
-- **GitHub Copilot**: Can generate correct commands (manual execution)
-- **Other AI tools**: Compatible with workflow guidelines (manual execution)
-
-### Natural Language Examples:
-```bash
-# AI assistants can interpret these commands
-"Work on this feature: https://www.notion.so/...?p=abc123"
-"Create a task for implementing user authentication"
-"Update the priority of task X to High"
-"Mark the database setup todo as complete"
-```
+### Hierarchical Task Analysis
+- `analyzeTaskStructure(taskId)` - Analyze hierarchical structure of task content
+- `generateProgressiveSteps(taskId)` - Generate progressive decomposition steps
+- `getTaskHierarchy(taskId)` - Get detailed hierarchy breakdown
 
 ## 📝 Configuration Options
 
