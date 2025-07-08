@@ -116,17 +116,17 @@ Problems with the current implementation.
 
 ```bash
 # Create a new task with specific properties
-notion-ai-tasks create "Fix login bug" --type "Bug" --priority "High" --status "Not Started"
+npx notion-ai-tasks create "Fix login bug" --type "Bug" --priority "High" --status "Not Started"
 
 # Create with content
-notion-ai-tasks create "Fix login bug" --content "Brief description of the bug" --type "Bug" --priority "High"
+npx notion-ai-tasks create "Fix login bug" --content "Brief description of the bug" --type "Bug" --priority "High"
 
 # Add todos after creation
-notion-ai-tasks todo [taskId] "Step 1" false
-notion-ai-tasks todo [taskId] "Step 2" false
+npx notion-ai-tasks todo [taskId] "Step 1" false
+npx notion-ai-tasks todo [taskId] "Step 2" false
 
 # Update task status
-notion-ai-tasks update <task-id> --status "In Progress"
+npx notion-ai-tasks update <task-id> --status "In Progress"
 ```
 
 ## Task Properties

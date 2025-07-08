@@ -18,7 +18,7 @@ Values in `[brackets]` refer to configuration variables from `notion-tasks.confi
 
 ### Step 1: Get Task Specs
 ```bash
-notion-ai-tasks show <task-id>
+npx notion-ai-tasks show <task-id>
 ```
 Extract task-id from URL: `https://www.notion.so/task-name-2270fffd93c2816c813cc1d32ad41a73` → use `2270fffd93c2816c813cc1d32ad41a73`
 
@@ -91,7 +91,7 @@ Comprehension: "I understand this task as a UX enhancement which will implement 
 
 ### Step 3: Update Status IMMEDIATELY
 ```bash
-notion-ai-tasks update <task-id> --status [inProgressStatus]
+npx notion-ai-tasks update <task-id> --status [inProgressStatus]
 ```
 
 ### Step 4: Analyze Task Structure & Organize Your Work
@@ -99,13 +99,13 @@ For complex Notion tasks, first analyze the hierarchical structure and follow pr
 
 #### Check for Hierarchical Structure:
 ```bash
-notion-ai-tasks hierarchical <task-id> --structure
+npx notion-ai-tasks hierarchical <task-id> --structure
 ```
 
 #### For Tasks with Hierarchical Content:
 If the task has nested sections or todos, use progressive decomposition:
 ```bash
-notion-ai-tasks hierarchical <task-id> --progressive
+npx notion-ai-tasks hierarchical <task-id> --progressive
 ```
 
 **CRITICAL: Follow the generated progressive steps EXACTLY. Do NOT mix levels.**
@@ -118,7 +118,7 @@ notion-ai-tasks hierarchical <task-id> --progressive
 
 **⚠️ Important Distinction:**
 - **Claude todos** (`TodoWrite`) = Internal Claude tracking with status: `pending`/`in_progress`/`completed` *(Claude Code only)*
-- **Notion todos** (`notion-ai-tasks todo`) = Actual task checkboxes in Notion database *(All AI assistants)*
+- **Notion todos** (`npx notion-ai-tasks todo`) = Actual task checkboxes in Notion database *(All AI assistants)*
 - **Notion statuses** = Task-level statuses like `[inProgressStatus]`, `[testStatus]` from config *(All AI assistants)*
 
 **Note for other AI assistants (GitHub Copilot, etc.):** Skip the `TodoWrite` examples - focus only on Notion todos and statuses.
@@ -215,7 +215,7 @@ TodoWrite([
 ### Step 5: Update Notion Todos IMMEDIATELY After Completion
 ```bash
 # Mark each todo as complete right after you implement it
-notion-ai-tasks todo <task-id> "todo text" true
+npx notion-ai-tasks todo <task-id> "todo text" true
 ```
 **Important**: Mark each todo as complete immediately after implementing it, not at the end!
 
@@ -223,10 +223,10 @@ notion-ai-tasks todo <task-id> "todo text" true
 During execution, you MAY add additional content or todos if necessary for implementation:
 ```bash
 # Add new todos discovered during development
-notion-ai-tasks add-content <task-id> -c "Additional task discovered during implementation [+]"
+npx notion-ai-tasks add-content <task-id> -c "Additional task discovered during implementation [+]"
 
 # Add explanatory content
-notion-ai-tasks add-content <task-id> -t "Implementation notes: [Details discovered during execution] [+]"
+npx notion-ai-tasks add-content <task-id> -t "Implementation notes: [Details discovered during execution] [+]"
 ```
 **Important**: Mark any added content with `[+]` to distinguish from original specifications.
 
@@ -235,7 +235,7 @@ When the task automatically moves to [testStatus] (all todos completed), provide
 
 ```bash
 # Add implementation summary and test recommendations to task
-notion-ai-tasks add-content <task-id> -c "## 🧪 Implementation Summary & Testing Guide
+npx notion-ai-tasks add-content <task-id> -c "## 🧪 Implementation Summary & Testing Guide
 
 ### What was implemented:
 - [Brief summary of key changes made]
@@ -251,16 +251,14 @@ notion-ai-tasks add-content <task-id> -c "## 🧪 Implementation Summary & Testi
 ### Test scenarios:
 1. **Happy path:** [Expected normal behavior]
 2. **Edge cases:** [Boundary conditions to test]
-3. **Error handling:** [Failure scenarios to verify]
-
-[+]"
+3. **Error handling:** [Failure scenarios to verify]"
 ```
 
 ### Step 7: Final Status Update
 ```bash
 # Task automatically goes to [testStatus] when 100% complete
 # Only mark as [completionStatus] manually after testing/validation
-notion-ai-tasks update <task-id> -s [completionStatus]
+npx notion-ai-tasks update <task-id> -s [completionStatus]
 ```
 
 ## ❌ NEVER DO THIS
@@ -283,7 +281,7 @@ notion-ai-tasks update <task-id> -s [completionStatus]
 ## Example: Complete Workflow
 ```bash
 # 1. Get task specs
-notion-ai-tasks show 2270fffd93c2816c813cc1d32ad41a73
+npx notion-ai-tasks show 2270fffd93c2816c813cc1d32ad41a73
 
 # 2. Analysis & Comprehension (MANDATORY)
 # Complete the context analysis checklist and write comprehension summary
@@ -293,19 +291,19 @@ notion-ai-tasks show 2270fffd93c2816c813cc1d32ad41a73
 # and requires security testing and session management."
 
 # 3. Update status immediately  
-notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "In Progress"
+npx notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "In Progress"
 
 # 4. Implement according to Notion task specs
 # 5. Mark todos as complete IMMEDIATELY after implementing each one
-notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Setup database" -c true
-notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Create API endpoints" -c true
-notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Add unit tests" -c true
+npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Setup database" -c true
+npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Create API endpoints" -c true
+npx notion-ai-tasks update-todo 2270fffd93c2816c813cc1d32ad41a73 "Add unit tests" -c true
 
 # 5.5. Add additional content if discovered during implementation
-notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "Add input validation for edge cases [+]"
+npx notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "Add input validation for edge cases [+]"
 
 # 6. Add implementation summary and test recommendations when task moves to Test
-notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "## 🧪 Implementation Summary & Testing Guide
+npx notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "## 🧪 Implementation Summary & Testing Guide
 ### What was implemented:
 - JWT authentication system with login/logout endpoints
 - User session management with secure token storage
@@ -319,7 +317,7 @@ notion-ai-tasks add-content 2270fffd93c2816c813cc1d32ad41a73 -c "## 🧪 Impleme
 
 # 7. Task automatically moves to "Test" when todos complete
 # 8. Only mark as "Done" manually after testing/validation
-notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "Done"
+npx notion-ai-tasks update 2270fffd93c2816c813cc1d32ad41a73 -s "Done"
 ```
 
 **This workflow is MANDATORY. Do not deviate.**

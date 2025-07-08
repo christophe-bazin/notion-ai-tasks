@@ -34,8 +34,8 @@
 3. **Follow the 5-step workflow EXACTLY**
 
 **The 5-step workflow is:**
-1. `notion-ai-tasks get <task-id>`
-2. `notion-ai-tasks update <task-id> -s "In Progress"`
+1. `npx notion-ai-tasks show <task-id>`
+2. `npx notion-ai-tasks update <task-id> -s "In Progress"`
 3. Use EXACT todos from Notion (don't create your own)
 4. Update todos during development
 5. Mark task as "Done" when finished

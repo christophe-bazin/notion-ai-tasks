@@ -355,7 +355,6 @@ await taskManager.updateTaskStatusBasedOnProgress(taskId);
 - `generateProgressiveSteps(taskId)` - Generate progressive decomposition steps
 - `getTaskHierarchy(taskId)` - Get detailed hierarchy breakdown
 
-
 ## 📝 Configuration Options
 
 All configuration is done via `notion-tasks.config.json`:
