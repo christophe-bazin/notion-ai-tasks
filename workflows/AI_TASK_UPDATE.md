@@ -17,34 +17,34 @@ Values in `[brackets]` refer to configuration variables from `notion-tasks.confi
 ### Basic Task Updates
 ```bash
 # Update task properties (status, priority, type)
-npx notion-ai-tasks update <task-id> -s [inProgressStatus] -p [from priorities array] -t [from types array]
+notion-ai-tasks update <task-id> -s [inProgressStatus] -p [from priorities array] -t [from types array]
 
 # Update checkbox properties
-npx notion-ai-tasks update <task-id> -c "completed=true" -c "tested=false"
+notion-ai-tasks update <task-id> -c "completed=true" -c "tested=false"
 
 # Add content to existing task
-npx notion-ai-tasks update <task-id> --content "## New Section\nContent in markdown format\n\n- [ ] New todo item"
+notion-ai-tasks update <task-id> --content "## New Section\nContent in markdown format\n\n- [ ] New todo item"
 ```
 
 ### Todo Management
 ```bash
 # Update a single todo item in task content
-npx notion-ai-tasks update-todo <task-id> "Setup database" -c true
+notion-ai-tasks update-todo <task-id> "Setup database" -c true
 
 # Update multiple todos at once
-npx notion-ai-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
+notion-ai-tasks update-multiple-todos <task-id> -u '[{"text":"Setup database","checked":true},{"text":"Create API","checked":true}]'
 
 # Mark progress by completing X number of steps
-npx notion-ai-tasks mark-progress <task-id> 3
+notion-ai-tasks mark-progress <task-id> 3
 ```
 
 ### Status Management
 ```bash
 # Auto-update task status based on todo completion progress
-npx notion-ai-tasks update-status <task-id>
+notion-ai-tasks update-status <task-id>
 
 # Check current progress
-npx notion-ai-tasks progress <task-id>
+notion-ai-tasks progress <task-id>
 ```
 
 ## Common Update Scenarios
@@ -52,28 +52,28 @@ npx notion-ai-tasks progress <task-id>
 ### 1. Adding New Requirements
 ```bash
 # First get current task content
-npx notion-ai-tasks get <task-id>
+notion-ai-tasks get <task-id>
 
 # Add structured content with new requirements
-npx notion-ai-tasks update <task-id> --content "## Additional Requirements\n- [ ] New requirement 1\n- [ ] New requirement 2"
+notion-ai-tasks update <task-id> --content "## Additional Requirements\n- [ ] New requirement 1\n- [ ] New requirement 2"
 
 # Or add individual todo items
-npx notion-ai-tasks update-todo <task-id> "New requirement" -c false
+notion-ai-tasks update-todo <task-id> "New requirement" -c false
 ```
 
 ### 2. Changing Priority/Status
 ```bash
 # Update priority due to changed business needs
-npx notion-ai-tasks update <task-id> -p "High"
+notion-ai-tasks update <task-id> -p "High"
 
 # Change status when work is paused
-npx notion-ai-tasks update <task-id> -s "Not Started"
+notion-ai-tasks update <task-id> -s "Not Started"
 ```
 
 ### 3. Bulk Todo Updates
 ```bash
 # Mark multiple items as complete
-npx notion-ai-tasks update-multiple-todos <task-id> -u '[
+notion-ai-tasks update-multiple-todos <task-id> -u '[
   {"text":"Design database schema","checked":true},
   {"text":"Implement API endpoints","checked":true},
   {"text":"Add unit tests","checked":false}
@@ -83,10 +83,10 @@ npx notion-ai-tasks update-multiple-todos <task-id> -u '[
 ### 4. Progress Tracking
 ```bash
 # Check current completion status
-npx notion-ai-tasks progress <task-id>
+notion-ai-tasks progress <task-id>
 
 # Auto-update status based on completion percentage
-npx notion-ai-tasks update-status <task-id>
+notion-ai-tasks update-status <task-id>
 ```
 
 
@@ -110,7 +110,7 @@ npx notion-ai-tasks update-status <task-id>
 
 ## Best Practices
 
-1. **Always check current state first**: Use `npx notion-ai-tasks get <task-id>` before making updates
+1. **Always check current state first**: Use `notion-ai-tasks get <task-id>` before making updates
 2. **Update status appropriately**: Match status with actual progress
 3. **Use bulk updates**: For multiple todo changes, use `update-multiple-todos`
 4. **Track progress**: Use `progress` command to see completion percentage
@@ -120,14 +120,14 @@ npx notion-ai-tasks update-status <task-id>
 ## Example: Complete Update Workflow
 ```bash
 # 1. Check current task state
-npx notion-ai-tasks get <task-id>
+notion-ai-tasks get <task-id>
 
 # 2. Update specific todos
-npx notion-ai-tasks update-todo <task-id> "Database setup" -c true
+notion-ai-tasks update-todo <task-id> "Database setup" -c true
 
 # 3. Check progress
-npx notion-ai-tasks progress <task-id>
+notion-ai-tasks progress <task-id>
 
 # 4. Auto-update status if needed
-npx notion-ai-tasks update-status <task-id>
+notion-ai-tasks update-status <task-id>
 ```
