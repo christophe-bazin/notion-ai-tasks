@@ -14,10 +14,6 @@ Node.js CLI for Notion task management with integrated AI workflows.
 - [Command Strategy](./docs/project/command-strategy.md)
 - [Development Workflow](./docs/project/development-workflow.md)
 
-## Examples
-- [Configuration Examples](./docs/examples/config-examples.md)
-- [Workflow Examples](./docs/examples/workflow-examples.md)
-
 ## AI Workflows
 - [AI Workflow Files](./workflows/) - Operational AI workflows for task management
 

@@ -39,9 +39,6 @@ notion-ai-tasks/
 │   │   ├── notion-integration.md    
 │   │   ├── command-strategy.md      
 │   │   └── development-workflow.md  # Development workflow             
-│   └── examples/               # Concrete examples
-│       ├── config-examples.md       
-│       └── workflow-examples.md
 ├── src/                        # Modular source code
 │   ├── core/                   # Core business logic
 │   │   ├── NotionClient.js     # Notion API client & config

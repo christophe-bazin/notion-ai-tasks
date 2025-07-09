@@ -85,4 +85,3 @@ When completing development tasks, ensure:
 For AI-specific workflows (task creation, natural language processing, etc.), see:
 - [AI Workflow Files](../../workflows/) - Operational AI workflows
 - [Command Strategy](./command-strategy.md) - Different command contexts
-- [Configuration Examples](../examples/config-examples.md) - Setup examples
