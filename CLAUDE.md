@@ -46,7 +46,7 @@ node cli.js add-content <task-id> --content "Content"
 node cli.js hierarchical <task-id> --structure
 ```
 
-### **Release Flow (GitHub Actions Automated Publishing):**
+### **Release Flow (GitHub Releases + Automated Publishing):**
 ```bash
 # 1. Create release branch
 git checkout -b release/vX.X.X
@@ -57,26 +57,43 @@ npm version patch|minor|major --no-git-tag-version
 # 3. Update README.md with new features/options
 # 4. Update CLAUDE.md if project structure, practices, or guidelines changed
 # 5. Test configuration examples
-# 6. Create release notes with changes since last release
-# 7. Commit and push release branch
+# 6. Commit and push release branch
 git add .
 git commit -m "bump version to X.X.X
 
-Release Notes:
 - Feature 1: Description
 - Feature 2: Description
 - Bug Fix: Description
 - Enhancement: Description"
 git push origin release/vX.X.X
 
-# 8. Create PR from release branch to main with release notes
-# 9. After PR merge, switch to main and create tag to trigger publication
+# 7. Create PR from release branch to main
+# 8. After PR merge, create GitHub Release (triggers npm publish)
 git checkout main
 git pull origin main
-git tag vX.X.X
-git push origin vX.X.X
 
-# 10. GitHub Actions will automatically publish to npm when tag is pushed
+# Option A: Using GitHub CLI (recommended)
+gh release create vX.X.X --title "Release vX.X.X" --notes "
+## Changes in this release:
+- Feature 1: Description
+- Feature 2: Description
+- Bug Fix: Description
+- Enhancement: Description
+
+## Installation:
+\`\`\`bash
+npm install -g notion-ai-tasks@X.X.X
+\`\`\`
+"
+
+# Option B: Using GitHub Web Interface
+# Go to https://github.com/your-repo/releases/new
+# - Tag: vX.X.X
+# - Title: Release vX.X.X
+# - Description: Copy release notes from commit
+# - Click "Publish release"
+
+# 9. GitHub Actions will automatically publish to npm when release is created
 ```
 
 ### **Semantic Versioning Guidelines:**
@@ -125,8 +142,9 @@ npm version major --no-git-tag-version
 - **Both package.json AND package-lock.json** must be updated with same version
 - **Use `--no-git-tag-version`** to prevent npm from creating tags locally
 - **Include detailed release notes** in commit message
-- **CRITICAL: Create and push git tag** after PR merge to trigger GitHub Actions publishing
-- **GitHub Actions publishes to npm** when git tag is pushed (not on PR merge)
+- **CRITICAL: Create GitHub Release** after PR merge to trigger npm publishing
+- **GitHub Actions publishes to npm** when GitHub Release is created (not on PR merge)
+- **Use GitHub CLI (`gh release create`)** for consistent release creation
 
 **For Commits:**
 - **NEVER add Claude as Co-Authored-By** in commit messages
@@ -426,7 +444,7 @@ try {
 - All configuration options documented
 
 ### **After Release PR Merge:**
-- **MANDATORY: Create and push git tag** to trigger npm publishing
+- **MANDATORY: Create GitHub Release** to trigger npm publishing
 - Verify GitHub Actions workflow completes successfully
 - Check that new version appears on npm registry
 - Update any dependent projects if needed
