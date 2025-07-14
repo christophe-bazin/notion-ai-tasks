@@ -84,6 +84,34 @@ Notion AI Tasks enables AI assistants (Claude Code, GitHub Copilot, etc.) to sea
 npm install -g notion-ai-tasks
 ```
 
+### Integration in Existing Projects
+
+**Add these AI instructions to your project's:**
+
+```markdown
+## Backlog Management with notion-ai-tasks
+
+### Task Execution (when given a Notion URL)
+- Read and follow `AI_TASK_EXECUTION.md` workflow exactly
+- Branch: `git checkout -b feat/task-name` or `git checkout -b fix/task-name`
+- Commit: `feat: task-name - description` or `fix: task-name - description`
+
+### Task Creation
+- Read and follow `AI_TASK_CREATION.md` workflow exactly
+
+### Task Updates
+- Read and follow `AI_TASK_UPDATE.md` workflow exactly
+
+### Workflow Selection
+- Read `AI_WORKFLOW_SELECTOR.md` to choose the right workflow based on task type
+```
+
+**Setup Requirements:**
+1. Install: `npm install -g notion-ai-tasks`
+2. Create `notion-tasks.config.json` with your Notion integration
+3. Add workflow instructions to your project's CLAUDE.md
+4. AI will automatically read and follow the appropriate workflow
+
 ### Setup
 
 1. **Create Notion Integration**:
@@ -223,7 +251,7 @@ notion-tasks add-content <task-id> -c "### Implementation Progress\n- [x] Databa
 
 **Add-Content Command Options:**
 - `<task-id>` - Task ID (required)
-- `-c, --content` - Content to add in markdown format
+- `-c, c` - Content to add in markdown format
 - `-t, --text` - Simple text content to add
 
 #### Hierarchical Task Analysis
