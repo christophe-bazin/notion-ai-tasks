@@ -2,15 +2,11 @@
 
 This guide is for AI assistants updating existing Notion tasks manually (not during execution).
 
-## 📝 Configuration Variables
+## 📝 Config Variables
 
-Values in `[brackets]` refer to configuration variables from `notion-tasks.config.json`:
-- `[inProgressStatus]` → Use value from `config.inProgressStatus`
-- `[testStatus]` → Use value from `config.testStatus` 
-- `[completionStatus]` → Use value from `config.completionStatus`
-- `[defaultStatus]` → Use value from `config.defaultStatus`
-- `[from priorities array]` → Use any value from `config.priorities` array
-- `[from types array]` → Use any value from `config.types` array
+`[brackets]` = values from `notion-tasks.config.json`:
+- `[inProgressStatus]`, `[testStatus]`, `[completionStatus]`, `[defaultStatus]`
+- `[from priorities array]`, `[from types array]`
 
 ## 🔄 Update Commands Reference
 

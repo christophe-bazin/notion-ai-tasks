@@ -1,43 +1,32 @@
 # AI Workflow Selector
 
-**Choose the appropriate workflow based on your task:**
+**Choose workflow based on task type:**
 
 ## 🎯 Task Execution (Most Common)
-**When:** User gives you a Notion URL to implement/execute an existing task
+**When:** User provides Notion URL to implement/execute existing task
+**Action:** Follow `AI_TASK_EXECUTION.md` EXACTLY
 
-**Example:** "Please implement this feature: https://www.notion.so/task-url"
-
-**Action:** Read and follow `AI_TASK_EXECUTION.md` EXACTLY
-
-## 🆕 Task Creation  
-**When:** User wants you to create a new task in Notion
-
-**Example:** "Create a task for implementing user authentication"
-
-**Action:** Read and follow `AI_TASK_CREATION.md` EXACTLY
+## 🆕 Task Creation
+**When:** User wants to create new task in Notion
+**Action:** Follow `AI_TASK_CREATION.md` EXACTLY
 
 ## ✏️ Task Update
-**When:** User wants to manually update an existing task
-
-**Example:** "Update the priority of task X" or "Mark these todos as complete"
-
-**Action:** Read and follow `AI_TASK_UPDATE.md` EXACTLY
+**When:** User wants to manually update existing task
+**Action:** Follow `AI_TASK_UPDATE.md` EXACTLY
 
 ---
 
-## 🚨 CRITICAL: For Task Execution (Most Common Case)
+## 🚨 CRITICAL: Task Execution Workflow
 
-**If user provides a Notion URL, you MUST:**
+**If user provides Notion URL:**
 
 1. **NEVER use WebFetch**
-2. **IMMEDIATELY read `AI_TASK_EXECUTION.md`**
-3. **Follow the 5-step workflow EXACTLY**
-
-**The 5-step workflow is:**
-1. `npx notion-ai-tasks show <task-id>`
-2. `npx notion-ai-tasks update <task-id> -s "In Progress"`
-3. Use EXACT todos from Notion (don't create your own)
-4. Update todos during development
-5. Mark task as "Done" when finished
+2. **Read `AI_TASK_EXECUTION.md`**
+3. **Follow 5-step workflow EXACTLY:**
+   - `notion-tasks show <task-id>`
+   - `notion-tasks update <task-id> -s "In Progress"`
+   - Use EXACT todos from Notion
+   - Update todos during development
+   - Mark task as "Done" when finished
 
 **FAILURE TO FOLLOW = TASK FAILURE**

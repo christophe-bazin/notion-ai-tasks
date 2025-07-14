@@ -6,14 +6,11 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import { listCommand } from './commands/list.js';
-import { showCommand } from './commands/show.js';
-import { createCommand } from './commands/create.js';
-import { updateCommand } from './commands/update.js';
-import { todoCommand } from './commands/todo.js';
-import { naturalCommand } from './commands/natural.js';
-import { hierarchicalCommand } from './commands/hierarchical.js';
-import { addContentCommand } from './commands/addContent.js';
+// Lazy loading for commands
+const loadCommand = async (commandName) => {
+  const { [commandName]: command } = await import(`./commands/${commandName.split('Command')[0]}.js`);
+  return command;
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,78 +18,100 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'
 
 let taskManager;
 
+const getTaskManager = () => taskManager || (taskManager = new TaskManager());
+
 program
   .name('notion-tasks')
   .description('CLI to manage Notion tasks')
   .version(packageJson.version);
 
-program
-  .command('list')
-  .description('List all tasks')
-  .action(async () => {
-    taskManager = taskManager || new TaskManager();
-    await listCommand(taskManager);
-  });
+const commands = [
+  {
+    name: 'list',
+    description: 'List all tasks',
+    action: async () => {
+      const listCommand = await loadCommand('listCommand');
+      await listCommand(getTaskManager());
+    }
+  },
+  {
+    name: 'show <taskId>',
+    description: 'Show detailed information about a specific task',
+    action: async (taskId) => {
+      const showCommand = await loadCommand('showCommand');
+      await showCommand(getTaskManager(), taskId);
+    }
+  },
+  {
+    name: 'create <title>',
+    description: 'Create a new task',
+    options: [
+      ['-s, --status <status>', 'Task status'],
+      ['-p, --priority <priority>', 'Task priority'],
+      ['-t, --type <type>', 'Task type'],
+      ['-c, --content <content>', 'Task content/description']
+    ],
+    action: async (title, options) => {
+      const createCommand = await loadCommand('createCommand');
+      await createCommand(getTaskManager(), title, options);
+    }
+  },
+  {
+    name: 'update <taskId>',
+    description: 'Update an existing task',
+    options: [
+      ['-t, --title <title>', 'New title'],
+      ['-s, --status <status>', 'New status'],
+      ['-p, --priority <priority>', 'New priority'],
+      ['--type <type>', 'New type']
+    ],
+    action: async (taskId, options) => {
+      const updateCommand = await loadCommand('updateCommand');
+      await updateCommand(getTaskManager(), taskId, options);
+    }
+  },
+  {
+    name: 'todo <taskId> <todoText> <checked>',
+    description: 'Create or update a todo item within a task',
+    action: async (taskId, todoText, checked) => {
+      const todoCommand = await loadCommand('todoCommand');
+      const isChecked = checked === 'true' || checked === '1';
+      await todoCommand(getTaskManager(), taskId, todoText, isChecked);
+    }
+  },
+  {
+    name: 'hierarchical <taskId>',
+    description: 'Analyze and manage hierarchical task structure',
+    options: [
+      ['-s, --structure', 'Show hierarchical structure'],
+      ['-p, --progressive', 'Generate progressive todo steps']
+    ],
+    action: async (taskId, options) => {
+      const hierarchicalCommand = await loadCommand('hierarchicalCommand');
+      await hierarchicalCommand(taskId, options);
+    }
+  },
+  {
+    name: 'add-content <taskId>',
+    description: 'Add content to an existing task',
+    options: [
+      ['-c, --content <content>', 'Content to add (markdown format)'],
+      ['-t, --text <text>', 'Text content to add']
+    ],
+    action: async (taskId, options) => {
+      const addContentCommand = await loadCommand('addContentCommand');
+      await addContentCommand(getTaskManager(), taskId, options);
+    }
+  }
+];
 
-program
-  .command('show <taskId>')
-  .description('Show detailed information about a specific task')
-  .action(async (taskId) => {
-    taskManager = taskManager || new TaskManager();
-    await showCommand(taskManager, taskId);
-  });
-
-program
-  .command('create <title>')
-  .description('Create a new task')
-  .option('-s, --status <status>', 'Task status')
-  .option('-p, --priority <priority>', 'Task priority')
-  .option('-t, --type <type>', 'Task type')
-  .option('-c, --content <content>', 'Task content/description')
-  .action(async (title, options) => {
-    taskManager = taskManager || new TaskManager();
-    await createCommand(taskManager, title, options);
-  });
-
-program
-  .command('update <taskId>')
-  .description('Update an existing task')
-  .option('-t, --title <title>', 'New title')
-  .option('-s, --status <status>', 'New status')
-  .option('-p, --priority <priority>', 'New priority')
-  .option('--type <type>', 'New type')
-  .action(async (taskId, options) => {
-    taskManager = taskManager || new TaskManager();
-    await updateCommand(taskManager, taskId, options);
-  });
-
-program
-  .command('todo <taskId> <todoText> <checked>')
-  .description('Create or update a todo item within a task')
-  .action(async (taskId, todoText, checked) => {
-    taskManager = taskManager || new TaskManager();
-    const isChecked = checked === 'true' || checked === '1';
-    await todoCommand(taskManager, taskId, todoText, isChecked);
-  });
-
-program
-  .command('hierarchical <taskId>')
-  .description('Analyze and manage hierarchical task structure')
-  .option('-s, --structure', 'Show hierarchical structure')
-  .option('-p, --progressive', 'Generate progressive todo steps')
-  .action(async (taskId, options) => {
-    await hierarchicalCommand(taskId, options);
-  });
-
-program
-  .command('add-content <taskId>')
-  .description('Add content to an existing task')
-  .option('-c, --content <content>', 'Content to add (markdown format)')
-  .option('-t, --text <text>', 'Text content to add')
-  .action(async (taskId, options) => {
-    const taskManager = new TaskManager();
-    await addContentCommand(taskManager, taskId, options);
-  });
+commands.forEach(cmd => {
+  const command = program.command(cmd.name).description(cmd.description);
+  if (cmd.options) {
+    cmd.options.forEach(option => command.option(...option));
+  }
+  command.action(cmd.action);
+});
 
 program
   .argument('[instruction...]', 'Natural language instruction')
@@ -100,8 +119,8 @@ program
     if (!instruction || instruction.length === 0) {
       program.help();
     } else {
-      taskManager = taskManager || new TaskManager();
-      await naturalCommand(taskManager, instruction);
+      const naturalCommand = await loadCommand('naturalCommand');
+      await naturalCommand(getTaskManager(), instruction);
     }
   });
 

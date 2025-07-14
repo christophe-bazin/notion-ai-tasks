@@ -2,15 +2,11 @@
 
 This guide is for AI assistants executing existing Notion tasks.
 
-## 📝 Configuration Variables
+## 📝 Config Variables
 
-Values in `[brackets]` refer to configuration variables from `notion-tasks.config.json`:
-- `[inProgressStatus]` → Use value from `config.inProgressStatus`
-- `[testStatus]` → Use value from `config.testStatus` 
-- `[completionStatus]` → Use value from `config.completionStatus`
-- `[defaultStatus]` → Use value from `config.defaultStatus`
-- `[from priorities array]` → Use any value from `config.priorities` array
-- `[from types array]` → Use any value from `config.types` array
+`[brackets]` = values from `notion-tasks.config.json`:
+- `[inProgressStatus]`, `[testStatus]`, `[completionStatus]`, `[defaultStatus]`
+- `[from priorities array]`, `[from types array]`
 
 ## 🚨 MANDATORY WORKFLOW
 
@@ -26,29 +22,12 @@ Extract task-id from URL: `https://www.notion.so/task-name-2270fffd93c2816c813cc
 **CRITICAL: Do NOT proceed to Step 3 without completing this analysis phase.**
 
 #### Context Analysis Checklist:
-Before starting implementation, you MUST answer these questions:
+**Before implementation, answer:**
 
-**📋 Task Understanding:**
-- [ ] What is the core business/technical objective of this task?
-- [ ] Who is the target user/beneficiary of this implementation?
-- [ ] What problem does this task solve?
-
-**🔍 Technical Analysis:**
-- [ ] What components/files will likely need modification?
-- [ ] Are there any technical dependencies or prerequisites?
-- [ ] What is the estimated complexity level (simple/medium/complex)?
-- [ ] Are the specifications complete and clear?
-
-**🌐 Project Context:**
-- [ ] How does this task integrate with the existing codebase?
-- [ ] Are there any potential conflicts with other features?
-- [ ] What testing approach will be needed?
-- [ ] Are there any security, performance, or compatibility considerations?
-
-**❓ Clarification Needs:**
-- [ ] Are there any ambiguous requirements that need clarification?
-- [ ] Do I need additional information before proceeding?
-- [ ] Should I ask the user any questions before starting?
+**📋 Task:** Objective? Problem solved? Target user?
+**🔍 Technical:** Components affected? Dependencies? Complexity?
+**🌐 Project:** Integration? Conflicts? Testing needs?
+**❓ Clarification:** Ambiguous requirements? Need more info?
 
 #### Comprehension Validation:
 Write a brief summary (2-3 sentences) of your understanding:
@@ -57,37 +36,12 @@ Write a brief summary (2-3 sentences) of your understanding:
 The implementation will involve [key components] and requires [main considerations]."
 ```
 
-#### Examples of Good Context Analysis:
+#### Analysis Examples:
 
-**Example 1 - Bug Fix Task:**
-```
-Task: "User login fails with special characters in password"
+**Bug Fix:** "Login fails with special chars" → Fix auth validation, test edge cases
+**Feature:** "Add dark mode" → Theme context + CSS vars + storage, test UI
 
-Analysis:
-✅ Objective: Fix authentication system to handle special characters in passwords
-✅ Problem: Security validation is rejecting valid special characters  
-✅ Components: Auth middleware, password validation, possibly database layer
-✅ Complexity: Medium - requires security considerations
-✅ Testing: Need edge cases with various special characters
-
-Comprehension: "I understand this task as a security bug fix which will modify the password validation logic to properly handle special characters. The implementation will involve auth middleware and validation functions and requires careful security testing."
-```
-
-**Example 2 - Feature Implementation:**
-```
-Task: "Add dark mode toggle to application settings"
-
-Analysis:  
-✅ Objective: Implement theme switching functionality for better UX
-✅ Problem: Users need visual comfort option for different lighting conditions
-✅ Components: Settings UI, theme context, CSS variables, local storage
-✅ Complexity: Medium - requires global state management
-✅ Testing: Visual testing across components, persistence testing
-
-Comprehension: "I understand this task as a UX enhancement which will implement global theme switching to solve user comfort needs. The implementation will involve React context, CSS variables, and local storage and requires comprehensive visual testing."
-```
-
-**Only proceed to Step 3 after completing this analysis and feeling confident in your understanding.**
+**Only proceed after completing analysis and understanding task fully.**
 
 ### Step 3: Update Status IMMEDIATELY
 ```bash
@@ -110,18 +64,16 @@ notion-tasks hierarchical <task-id> --progressive
 
 **CRITICAL: Follow the generated progressive steps EXACTLY. Do NOT mix levels.**
 
-**Progressive Execution Workflow:**
-1. **Get the progressive steps** from the hierarchical command
-2. **Execute each step individually** following the exact todo list provided
-3. **Update Claude todos to match ONLY the current step** - don't mix with other levels
-4. **Complete current step fully** before moving to next step
+**Progressive Execution:**
+1. Get progressive steps from hierarchical command
+2. Execute each step individually with exact todo list
+3. Update Claude todos to match ONLY current step
+4. Complete current step fully before next
 
-**⚠️ Important Distinction:**
-- **Claude todos** (`TodoWrite`) = Internal Claude tracking with status: `pending`/`in_progress`/`completed` *(Claude Code only)*
-- **Notion todos** (`notion-tasks todo`) = Actual task checkboxes in Notion database *(All AI assistants)*
-- **Notion statuses** = Task-level statuses like `[inProgressStatus]`, `[testStatus]` from config *(All AI assistants)*
-
-**Note for other AI assistants (GitHub Copilot, etc.):** Skip the `TodoWrite` examples - focus only on Notion todos and statuses.
+**⚠️ Distinction:**
+- **Claude todos** (`TodoWrite`) = Internal tracking *(Claude Code only)*
+- **Notion todos** (`notion-tasks todo`) = Actual task checkboxes *(All AI assistants)*
+- **Notion statuses** = Task-level statuses from config *(All AI assistants)*
 
 **Example Progressive Execution:**
 ```javascript
