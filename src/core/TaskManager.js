@@ -2,6 +2,7 @@ import NotionClient from './NotionClient.js';
 import { ContentManager } from './ContentManager.js';
 import { parseMarkdownToNotionBlocks } from '../utils/markdownParser.js';
 import { HierarchicalTaskParser } from '../utils/hierarchicalTaskParser.js';
+import { notionCache } from '../utils/cache.js';
 
 export class TaskManager {
   constructor() {
@@ -16,10 +17,18 @@ export class TaskManager {
 
   async getDatabaseSchema() {
     if (!this.databaseSchema) {
-      const database = await this.notion.databases.retrieve({
-        database_id: this.databaseId,
-      });
-      this.databaseSchema = database.properties;
+      const cacheKey = `schema:${this.databaseId}`;
+      let cached = notionCache.get(cacheKey);
+      
+      if (!cached) {
+        const database = await this.notion.databases.retrieve({
+          database_id: this.databaseId,
+        });
+        cached = database.properties;
+        notionCache.set(cacheKey, cached);
+      }
+      
+      this.databaseSchema = cached;
     }
     return this.databaseSchema;
   }
@@ -164,6 +173,9 @@ export class TaskManager {
         properties: properties,
       });
 
+      // Invalidate cache for this task
+      notionCache.invalidatePrefix(`task:${taskId}`);
+
       return { success: true };
     } catch (error) {
       console.error('Error updating task:', error);
@@ -173,9 +185,16 @@ export class TaskManager {
 
   async getTask(taskId) {
     try {
-      const response = await this.notion.pages.retrieve({
-        page_id: taskId
-      });
+      const cacheKey = `task:${taskId}`;
+      let response = notionCache.get(cacheKey);
+      
+      if (!response) {
+        response = await this.notion.pages.retrieve({
+          page_id: taskId
+        });
+        notionCache.set(cacheKey, response);
+      }
+      
       const schema = await this.getDatabaseSchema();
       
       const taskData = {
